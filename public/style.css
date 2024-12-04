@@ -48,6 +48,25 @@ input {
   color: white;
 }
 
+textarea {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #4b5563;
+  background-color: #374151;
+  color: white;
+  width: 100%;
+  resize: vertical;
+}
+
+select {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #4b5563;
+  background-color: #374151;
+  color: white;
+  width: 100%;
+}
+
 .button {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
@@ -75,6 +94,15 @@ input {
 
 .button-secondary:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.button-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.button-success:hover {
+  background-color: #059669;
 }
 
 .text-center {
@@ -185,6 +213,66 @@ input {
   margin-top: 1rem;
 }
 
+/* New styles for employee page */
+.crud-container {
+  overflow-x: auto;
+}
+
+.crud-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.crud-table th,
+.crud-table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.crud-table th {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: bold;
+}
+
+.button-small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.button-danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.button-danger:hover {
+  background-color: #dc2626;
+}
+
+/* Estilos adicionales para la página de generación de reportes */
+.reporte-contenido {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+#reporte-titulo {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+#reporte-periodo {
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
+#reporte-datos {
+  margin-top: 1rem;
+}
+
 @media (max-width: 640px) {
   .navigation ul {
     flex-direction: column;
@@ -198,5 +286,14 @@ input {
   .button-container {
     flex-direction: column;
     align-items: center;
+  }
+
+  .crud-table {
+    font-size: 0.875rem;
+  }
+
+  .button-small {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.75rem;
   }
 }

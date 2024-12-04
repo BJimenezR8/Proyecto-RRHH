@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicar a Posiciones - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Aplicar a Posiciones</h1>
+            <p class="welcome-message">Bienvenido, <span id="employee-name">Nombre del Empleado</span></p>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/usuario" class="nav-link">Página Principal</a></li>
+                    <li><a href="#" class="nav-link">Aplicar a Posiciones</a></li>
+                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section id="posiciones-disponibles" class="dashboard-section">
+                <h2>Posiciones Disponibles</h2>
+                <div class="crud-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Departamento</th>
+                                <th>Fecha Límite</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Desarrollador Frontend</td>
+                                <td>Tecnología</td>
+                                <td>2023-07-15</td>
+                                <td>
+                                    <button class="button button-small button-primary" onclick="mostrarFormulario('Desarrollador Frontend')">Aplicar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Analista de Recursos Humanos</td>
+                                <td>Recursos Humanos</td>
+                                <td>2023-07-20</td>
+                                <td>
+                                    <button class="button button-small button-primary" onclick="mostrarFormulario('Analista de Recursos Humanos')">Aplicar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Gerente de Proyectos</td>
+                                <td>Administración</td>
+                                <td>2023-07-25</td>
+                                <td>
+                                    <button class="button button-small button-primary" onclick="mostrarFormulario('Gerente de Proyectos')">Aplicar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section id="formulario-aplicacion" class="dashboard-section" style="display: none;">
+                <h2>Aplicar para: <span id="posicion-titulo"></span></h2>
+                <form class="form">
+                    <div class="form-group">
+                        <label for="experiencia">Experiencia Relevante</label>
+                        <textarea id="experiencia" name="experiencia" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="motivacion">Carta de Motivación</label>
+                        <textarea id="motivacion" name="motivacion" rows="6" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="cv">Subir CV (PDF)</label>
+                        <input type="file" id="cv" name="cv" accept=".pdf" required>
+                    </div>
+                    <div class="button-container">
+                        <button type="submit" class="button button-primary">Enviar Aplicación</button>
+                        <button type="button" class="button button-secondary" onclick="ocultarFormulario()">Cancelar</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+    <script>
+        function mostrarFormulario(titulo) {
+            document.getElementById('posicion-titulo').textContent = titulo;
+            document.getElementById('formulario-aplicacion').style.display = 'block';
+            document.getElementById('posiciones-disponibles').style.display = 'none';
+        }
+
+        function ocultarFormulario() {
+            document.getElementById('formulario-aplicacion').style.display = 'none';
+            document.getElementById('posiciones-disponibles').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

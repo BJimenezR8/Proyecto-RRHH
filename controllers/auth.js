@@ -50,20 +50,20 @@ exports.registro = (req, res) => {
 
       if (emailExists) {
           return res.render('registro', {
-            message: 'El email ya está en uso'
+            failed: 'El email ya está en uso'
           });
       }
 
       if (cedulaExists) {
           return res.render('registro', {
-            message: 'La cédula ya está en uso'
+            failed: 'La cédula ya está en uso'
           });
       }
   }
 
     if (!validaCedula(cedula)) {
     return res.render('registro', {
-        message: 'La cédula no es válida'
+      failed: 'La cédula no es válida'
     });
 }
 
@@ -76,7 +76,7 @@ exports.registro = (req, res) => {
       } else {
         console.log(results);
         return res.render('registro', {
-          message: 'Usuario registrado'
+          success: 'Usuario registrado'
         });
       }
     });
@@ -96,17 +96,21 @@ exports.login = async (req, res) => {
       console.log('Login exitoso');
 
       const userRole = results[0].rol;
+      
       if (userRole === 'usuario') {
-        res.render('usuario');
+        res.render('usuario/usuario', {
+          username: results[0].username});
       } else if (userRole === 'admin') {
-        res.render('admin');
+        res.render('admin/admin');
       } else {
         console.log('Rol desconocido');
         res.status(403).send('Acceso denegado');
       }
     } else {
       console.log('Email o contraseña incorrectos');
-      res.status(401).send('Email o contraseña incorrectos');
+      return res.render('login', {
+        failed: 'Email o contraseña incorrectos'
+      });
     }
   });
 };

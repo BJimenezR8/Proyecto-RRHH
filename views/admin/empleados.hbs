@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Gestión de Empleados</h1>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/admin" class="nav-link">Volver al Panel Principal</a></li>
+                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h2>Lista de Empleados</h2>
+                <div class="button-container">
+                    <button class="button button-primary" onclick="mostrarFormulario()">Agregar Empleado</button>
+                </div>
+                <div class="crud-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Departamento</th>
+                                <th>Fecha de Contratación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Juan Pérez</td>
+                                <td>juan.perez@empresa.com</td>
+                                <td>Desarrollo</td>
+                                <td>2022-05-15</td>
+                                <td>
+                                    <button class="button button-small button-primary" onclick="editarEmpleado(1)">Editar</button>
+                                    <button class="button button-small button-danger" onclick="eliminarEmpleado(1)">Eliminar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>María González</td>
+                                <td>maria.gonzalez@empresa.com</td>
+                                <td>Recursos Humanos</td>
+                                <td>2021-11-01</td>
+                                <td>
+                                    <button class="button button-small button-primary" onclick="editarEmpleado(2)">Editar</button>
+                                    <button class="button button-small button-danger" onclick="eliminarEmpleado(2)">Eliminar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+    <script>
+        function mostrarFormulario() {
+            alert('Mostrar formulario para agregar empleado');
+        }
+
+        function editarEmpleado(id) {
+            alert('Editar empleado con ID: ' + id);
+        }
+
+        function eliminarEmpleado(id) {
+            alert('Eliminar empleado con ID: ' + id);
+        }
+    </script>
+</body>
+</html>

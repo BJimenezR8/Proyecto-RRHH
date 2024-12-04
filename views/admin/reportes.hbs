@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generación de Reportes - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Generación de Reportes</h1>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/admin" class="nav-link">Volver al Panel Principal</a></li>
+                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h2>Seleccionar Tipo de Reporte</h2>
+                <form class="form" id="reporte-form">
+                    <div class="form-group">
+                        <label for="tipo-reporte">Tipo de Reporte</label>
+                        <select id="tipo-reporte" name="tipo-reporte" required>
+                            <option value="">Seleccione un tipo de reporte</option>
+                            <option value="candidatos">Resumen de Candidatos</option>
+                            <option value="posiciones">Posiciones Abiertas</option>
+                            <option value="contrataciones">Contrataciones Recientes</option>
+                            <option value="desempeño">Desempeño de Reclutamiento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha-inicio">Fecha de Inicio</label>
+                        <input type="date" id="fecha-inicio" name="fecha-inicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha-fin">Fecha de Fin</label>
+                        <input type="date" id="fecha-fin" name="fecha-fin" required>
+                    </div>
+                    <div class="button-container">
+                        <button type="submit" class="button button-primary">Generar Reporte PDF</button>
+                    </div>
+                </form>
+            </section>
+            <section class="dashboard-section" id="reporte-preview" style="display: none;">
+                <h2>Vista Previa del Reporte</h2>
+                <div class="reporte-contenido">
+                    <h3 id="reporte-titulo"></h3>
+                    <p id="reporte-periodo"></p>
+                    <div id="reporte-datos"></div>
+                </div>
+                <div class="button-container">
+                    <button class="button button-primary" onclick="descargarReportePDF()">Descargar PDF</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        document.getElementById('reporte-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const tipoReporte = document.getElementById('tipo-reporte').value;
+            const fechaInicio = document.getElementById('fecha-inicio').value;
+            const fechaFin = document.getElementById('fecha-fin').value;
+
+            // Simulación de generación de reporte
+            document.getElementById('reporte-titulo').textContent = `Reporte de ${tipoReporte}`;
+            document.getElementById('reporte-periodo').textContent = `Período: ${fechaInicio} - ${fechaFin}`;
+            document.getElementById('reporte-datos').innerHTML = '<p>Aquí se mostrarían los datos del reporte...</p>';
+            
+            document.getElementById('reporte-preview').style.display = 'block';
+        });
+
+        function descargarReportePDF() {
+            alert('Descargando reporte en PDF...');
+            // Aquí iría la lógica real para generar y descargar el PDF
+        }
+    </script>
+</body>
+</html>
