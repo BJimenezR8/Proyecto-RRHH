@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Panel de Administrador</h1>
+            <p class="welcome-message">Bienvenido, Administrador</p>
+        </header>
+        <nav class="navigation">
+            <ul>
+                <li><a href="#usuarios" class="nav-link">Gestión de Usuarios</a></li>
+                <li><a href="#vacantes" class="nav-link">Gestión de Vacantes</a></li>
+                <li><a href="#reportes" class="nav-link">Reportes</a></li>
+                <li><a href="#configuracion" class="nav-link">Configuración</a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <section id="resumen" class="dashboard-section">
+                <h2>Resumen del Sistema</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-item">
+                        <h3>Usuarios Activos</h3>
+                        <p class="dashboard-number">150</p>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>Vacantes Abiertas</h3>
+                        <p class="dashboard-number">12</p>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>Solicitudes Pendientes</h3>
+                        <p class="dashboard-number">25</p>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>Entrevistas Programadas</h3>
+                        <p class="dashboard-number">8</p>
+                    </div>
+                </div>
+            </section>
+            <section id="acciones-rapidas" class="dashboard-section">
+                <h2>Acciones Rápidas</h2>
+                <div class="button-container">
+                    <button class="button button-primary">Crear Nueva Vacante</button>
+                    <button class="button button-primary">Revisar Solicitudes</button>
+                    <button class="button button-primary">Generar Reporte</button>
+                </div>
+            </section>
+        </main>
+        <footer class="footer">
+            <button class="button button-secondary">Cerrar Sesión</button>
+        </footer>
+    </div>
+</body>
+</html>

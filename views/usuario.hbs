@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Empleado - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Panel de Empleado</h1>
+            <p class="welcome-message">Bienvenido, <span id="employee-name">Nombre del Empleado</span></p>
+        </header>
+        <nav class="navigation">
+            <ul>
+                <li><a href="#perfil" class="nav-link">Mi Perfil</a></li>
+                <li><a href="#tareas" class="nav-link">Mis Tareas</a></li>
+                <li><a href="#vacaciones" class="nav-link">Solicitud de Vacaciones</a></li>
+                <li><a href="#documentos" class="nav-link">Documentos</a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <section id="resumen" class="dashboard-section">
+                <h2>Resumen</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-item">
+                        <h3>Tareas Pendientes</h3>
+                        <p class="dashboard-number">5</p>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>Días de Vacaciones</h3>
+                        <p class="dashboard-number">15</p>
+                    </div>
+                    <div class="dashboard-item">
+                        <h3>Próxima Evaluación</h3>
+                        <p>15 de Julio, 2024</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="footer">
+            <button id="logout-button" class="button button-secondary">Cerrar Sesión</button>
+        </footer>
+    </div>
+    <script src="empleado.js"></script>
+</body>
+</html>
