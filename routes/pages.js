@@ -1,9 +1,13 @@
 const express = require('express');
 
+const authController = require('../controllers/auth');
+
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.render('index');
+router.get('/', authController.isLoggedIn, (req, res) => {
+  res.render('index', {
+    user: req.user
+  });
 });
 
 router.get('/registro', (req, res) => {
@@ -14,12 +18,12 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
-router.get('/usuario', (req, res) => {
+/* router.get('/usuario', (req, res) => {
   res.render('usuario/usuario');
-});
+}); */
 
-router.get('/aplicaciones', (req, res) => {
-  res.render('usuario/aplicaciones');
+router.get('/puestos', (req, res) => {
+  res.render('usuario/puestos');
 });
 
 router.get('/admin', (req, res) => {
@@ -40,6 +44,25 @@ router.get('/reportes', (req, res) => {
 
 router.get('/trabajos', (req, res) => {
   res.render('admin/trabajos');
+});
+
+router.get('/logout', (req, res) => {
+  res.render('logout');
+});
+
+router.get('/usuario', authController.isLoggedIn, (req, res) => {
+  console.log(req.user);
+  if (req.user) {
+    if (req.user.rol === 'admin') {
+      res.render('admin/admin');
+    } else {
+      res.render('usuario/usuario', {
+        user: req.user
+      });
+    }
+  } else {
+    res.redirect('/login');
+  }
 });
 
 module.exports = router;

@@ -10,7 +10,6 @@
     <div class="container">
         <header class="header">
             <h1>Aplicar a Posiciones</h1>
-            <p class="welcome-message">Bienvenido, <span id="employee-name">Nombre del Empleado</span></p>
             <nav class="navigation">
                 <ul>
                     <li><a href="/usuario" class="nav-link">Página Principal</a></li>
@@ -23,42 +22,45 @@
             <section id="posiciones-disponibles" class="dashboard-section">
                 <h2>Posiciones Disponibles</h2>
                 <div class="crud-container">
-                    <table class="crud-table">
-                        <thead>
-                            <tr>
-                                <th>Título</th>
-                                <th>Departamento</th>
-                                <th>Fecha Límite</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Desarrollador Frontend</td>
-                                <td>Tecnología</td>
-                                <td>2023-07-15</td>
-                                <td>
-                                    <button class="button button-small button-primary" onclick="mostrarFormulario('Desarrollador Frontend')">Aplicar</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Analista de Recursos Humanos</td>
-                                <td>Recursos Humanos</td>
-                                <td>2023-07-20</td>
-                                <td>
-                                    <button class="button button-small button-primary" onclick="mostrarFormulario('Analista de Recursos Humanos')">Aplicar</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Gerente de Proyectos</td>
-                                <td>Administración</td>
-                                <td>2023-07-25</td>
-                                <td>
-                                    <button class="button button-small button-primary" onclick="mostrarFormulario('Gerente de Proyectos')">Aplicar</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <form action="/auth/puestos" method="get">
+                        <table class="crud-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Nivel de Riesgo</th>
+                                    <th>Salario Minimo</th>
+                                    <th>Salario Maximo</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each puestos}}
+                                <tr>
+                                    <td>{{this.id}}</td>
+                                    <td>{{this.nombre}}</td>
+                                    <td>{{this.nivel_riesgo}}</td>
+                                    <td>{{this.salario_minimo}}</td>
+                                    <td>{{this.salario_maximo}}</td>
+                                    <td>{{this.estado}}</td>
+                                    <td>
+                                        <form action="/auth/aplicarPuesto" method="POST">
+                                            <input type="hidden" name="puestoId" value="{{this.id}}">
+                                            <input type="hidden" name="nombre" value="{{this.nombre}}">
+                                            <input type="hidden" name="nivel_riesgo" value="{{this.nivel_riesgo}}">
+                                            <input type="hidden" name="salario_minimo" value="{{this.salario_minimo}}">
+                                            <input type="hidden" name="salario_maximo" value="{{this.salario_maximo}}">
+                                            <input type="hidden" name="estado" value="{{this.estado}}">
+                                            <button type="submit">Aplicar</button>
+                                            <button>Ver detalles</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </form>
                 </div>
             </section>
             <section id="formulario-aplicacion" class="dashboard-section" style="display: none;">
@@ -83,9 +85,6 @@
                 </form>
             </section>
         </main>
-        <footer class="footer">
-            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
-        </footer>
     </div>
     <script>
         function mostrarFormulario(titulo) {

@@ -2,8 +2,11 @@ const express = require('express');
 const mysql = require('mysql');
 const dotenv = require('dotenv');
 const path = require('path');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 dotenv.config({ path: './.env' });
+
 
 const app = express();
 
@@ -18,6 +21,7 @@ const db = mysql.createConnection({
 const publicDirectory = path.join(__dirname, './public');
 app.use(express.static(publicDirectory));
 
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
 app.set('view engine', 'hbs');
@@ -31,6 +35,12 @@ db.connect((err) => {
 
 app.use('/', require('./routes/pages'));
 app.use('/auth', require('./routes/auth'));
+app.use(session({
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true,
+  cokie: { maxAge: 60000 }
+}));
 
 app.listen(5000, () => {
   console.log('Server is running on port 5000');
