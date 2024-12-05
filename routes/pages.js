@@ -26,8 +26,10 @@ router.get('/puestos', (req, res) => {
   res.render('usuario/puestos');
 });
 
-router.get('/admin', (req, res) => {
-  res.render('admin/admin');
+router.get('/admin', authController.isLoggedIn, (req, res) => {
+  res.render('admin/admin', {
+    username: req.user.username
+  });
 });
 
 router.get('/empleados', (req, res) => {
@@ -51,7 +53,6 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/usuario', authController.isLoggedIn, (req, res) => {
-  console.log(req.user);
   if (req.user) {
     if (req.user.rol === 'admin') {
       res.render('admin/admin');

@@ -124,7 +124,7 @@ exports.login = async (req, res) => {
         });
         
         req.user = results[0];
-        console.log("The token is: " + token);
+        // console.log("The token is: " + token);
 
         const cookieOptions = {
           expires: new Date(
@@ -134,14 +134,19 @@ exports.login = async (req, res) => {
         };
 
         res.cookie("jwt", token, cookieOptions);
-        res.status(200).redirect("/usuario");
+        if (results[0].rol === 'admin') {
+          res.status(200).redirect("/auth/admin");
+        } else if (results[0].rol === 'usuario') {
+          res.status(200).redirect("/auth/usuario");
+        } else {
+          res.status(403).send('Acceso denegado');
+        }
       }
     }
   );
 }
 
 exports.isLoggedIn = async (req, res, next) => {
-  console.log('el jwt verify es '+ (jwt.verify(req.cookies.jwt, process.env.JWT_SECRET)).id);
   if (req.cookies.jwt) {
     try {
       const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
@@ -155,7 +160,6 @@ exports.isLoggedIn = async (req, res, next) => {
           }
 
           req.user = results[0];
-          console.log("User is: " + req.user.username);
           return next();
         }
       );
@@ -178,7 +182,7 @@ exports.logout = (req, res) => {
 
 exports.puestos = (req, res) => {
   db.query(
-    "SELECT p.* FROM puestos p LEFT JOIN aplicaciones a ON p.id = a.puesto_id WHERE a.puesto_id IS NULL; ",
+    "SELECT p.* FROM puestos p LEFT JOIN aplicaciones a ON p.id = a.puesto_id WHERE a.puesto_id IS NULL  AND p.estado = 'Activo';",
     (error, results) => {
       if (error) {
         console.log(error);
@@ -197,24 +201,69 @@ exports.aplicarPuesto = (req, res) => {
   }
 
   const { puestoId, nombre, nivel_riesgo, salario_minimo, salario_maximo, estado } = req.body;
-  const userId = req.user.id; // Asumiendo que el usuario está autenticado y su ID está en req.user
-  console.log(req.body);
+  const userId = req.user.id;
 
   // Lógica para manejar la aplicación al puesto
   db.query(
-    'INSERT INTO aplicaciones (user_id, puesto_id, nombre, nivel_riesgo, salario_minimo, salario_maximo, estado) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO aplicaciones (user_id, puesto_id, nombre, nivel_riesgo, salario_minimo, salario_maximo, fecha_aplicacion)  VALUES (?, ?, ?, ?, ?, ?, CURDATE());',
     [userId, puestoId, nombre, nivel_riesgo, salario_minimo, salario_maximo, estado],
     (error, results) => {
       if (error) {
         console.log(error);
         res.status(500).send('Error al aplicar al puesto');
       } else {
-        console.log(results);
-        res.render('/puestos');
+        res.redirect('/auth/puestos');
       }
     }
   );
 };
 
+exports.getAplicacion = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No estás autenticado');
+  }
 
+  const userId = req.user.id;
+
+
+  // Consulta para obtener las aplicaciones del usuario
+  db.query(
+    'SELECT a.id, p.nombre, p.nivel_riesgo, p.salario_minimo, p.salario_maximo, a.estado, DATE_FORMAT(a.fecha_aplicacion, "%d-%b-%Y") AS fecha_aplicacion FROM aplicaciones a JOIN puestos p ON a.puesto_id = p.id WHERE a.user_id = ?;',
+    [userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send('Error al obtener las aplicaciones');
+      } else {
+        res.render('usuario/usuario', {
+          aplicaciones: results,
+          username: req.user.username // Pasar el nombre de usuario a la vista
+        });
+      }
+    }
+  );
+};
+
+exports.eliminarAplicacion = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No estás autenticado');
+  }
+  
+  const { aplicacionId } = req.body;
+  const userId = req.user.id;
+
+  // Consulta para eliminar la aplicación del usuario
+  db.query(
+    'DELETE FROM aplicaciones WHERE id = ? AND user_id = ?',
+    [aplicacionId, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        res.status(500).send('Error al eliminar la aplicación');
+      } else {
+        res.redirect('/auth/usuario');
+      }
+    }
+  );
+};
 

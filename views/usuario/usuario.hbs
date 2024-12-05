@@ -10,7 +10,7 @@
     <div class="container">
         <header class="header">
             <h1>Panel de Empleado</h1>
-            <p class="welcome-message">Bienvenido, <span id="employee-name">{{user.username}}</span></p>
+            <p class="welcome-message">Bienvenido, <span id="employee-name">{{username}}</span></p>
             <nav class="navigation">
                 <ul>
                     <li><a href="#" class="nav-link">Página Principal</a></li>
@@ -25,28 +25,32 @@
                 <div id="crud-aplicaciones" class="crud-container">
                     <!-- Aquí iría el CRUD de las aplicaciones -->
                     <table class="crud-table">
-                        <thead>
-                            <tr>
-                                <th>Posición</th>
-                                <th>Fecha de Aplicación</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Desarrollador Frontend</td>
-                                <td>2023-06-01</td>
-                                <td>En revisión</td>
-                                <td>
-                                    <button class="button button-small">Ver</button>
-                                    <button class="button button-small">Editar</button>
-                                    <button class="button button-small button-danger">Eliminar</button>
-                                </td>
-                            </tr>
-                            <!-- Más filas irían aquí -->
-                        </tbody>
-                    </table>
+                <thead>
+                    <tr>
+                        <th>Posición</th>
+                        <th>Fecha de Aplicación</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each aplicaciones}}
+                    <tr>
+                        <td>{{this.nombre}}</td>
+                        <td>{{this.fecha_aplicacion}}</td>
+                        <td>{{this.estado}}</td>
+                        <td>
+                            <form action="/auth/eliminarAplicacion" method="POST">
+                                <input type="hidden" name="aplicacionId" value="{{this.id}}">
+                                <button class="button button-small">Ver</button>
+                                <button class="button button-small">Editar</button>
+                                <button class="button button-small button-danger" type="submit">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
                 </div>
             </section>
         </main>

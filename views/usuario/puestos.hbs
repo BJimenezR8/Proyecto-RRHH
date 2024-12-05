@@ -12,7 +12,7 @@
             <h1>Aplicar a Posiciones</h1>
             <nav class="navigation">
                 <ul>
-                    <li><a href="/usuario" class="nav-link">Página Principal</a></li>
+                    <li><a href="/auth/usuario" class="nav-link">Página Principal</a></li>
                     <li><a href="#" class="nav-link">Aplicar a Posiciones</a></li>
                     <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
                 </ul>
@@ -26,24 +26,20 @@
                         <table class="crud-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Nombre</th>
                                     <th>Nivel de Riesgo</th>
                                     <th>Salario Minimo</th>
                                     <th>Salario Maximo</th>
-                                    <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {{#each puestos}}
                                 <tr>
-                                    <td>{{this.id}}</td>
                                     <td>{{this.nombre}}</td>
                                     <td>{{this.nivel_riesgo}}</td>
                                     <td>{{this.salario_minimo}}</td>
                                     <td>{{this.salario_maximo}}</td>
-                                    <td>{{this.estado}}</td>
                                     <td>
                                         <form action="/auth/aplicarPuesto" method="POST">
                                             <input type="hidden" name="puestoId" value="{{this.id}}">
@@ -51,7 +47,6 @@
                                             <input type="hidden" name="nivel_riesgo" value="{{this.nivel_riesgo}}">
                                             <input type="hidden" name="salario_minimo" value="{{this.salario_minimo}}">
                                             <input type="hidden" name="salario_maximo" value="{{this.salario_maximo}}">
-                                            <input type="hidden" name="estado" value="{{this.estado}}">
                                             <button type="submit">Aplicar</button>
                                             <button>Ver detalles</button>
                                         </form>
