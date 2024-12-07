@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contratar Candidato - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Contratar Candidato</h1>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/auth/candidatos" class="nav-link">Volver a Gestión de Candidatos</a></li>
+                    <li><a href="/logout" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <div class="form-container">
+                    <form action="/auth/contratarCandidato" method="POST" class="form">
+                        <input type="hidden" name="id" value="{{candidato.id}}">
+                        
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" value="{{candidato.username}}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cedula">Cédula:</label>
+                            <input type="text" id="cedula" name="cedula" value="{{candidato.cedula}}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nombre">Puesto Aplicado:</label>
+                            <input type="text" id="nombre" name="nombre" value="{{candidato.nombre}}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="departamento">Departamento:</label>
+                            <input type="text" id="departamento" name="departamento" value="{{candidato.departamento}}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salario_aspirante">Salario Aspirante:</label>
+                            <input type="text" id="salario_aspirante" name="salario_aspirante" value="{{candidato.salario_aspirante}}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rango_salario">Rango de Salario:</label>
+                            <input type="text" id="rango_salario" name="rango_salario" value="{{candidato.salario_minimo}} - {{candidato.salario_maximo}}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salario_mensual">Salario Mensual:</label>
+                            <input type="number" id="salario_mensual" name="salario_mensual" required>
+                        </div>
+
+                        <div class="button-container">
+                            <button type="submit" class="button button-primary">Contratar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>

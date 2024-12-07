@@ -49,6 +49,9 @@
                                         <input type="hidden" name="id" value="{{this.id}}">
                                         <button type="submit" class="button button-small button-danger">Eliminar</button>
                                     </form>
+                                    <form action="/auth/contratarCandidato/{{this.id}}" method="GET" class="inline-form">
+                                        <button type="submit" class="button button-small button-success">Contratar</button>
+                                    </form>
                                 </td>
                             </tr>
                             {{/each}}

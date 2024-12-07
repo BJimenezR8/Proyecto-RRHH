@@ -901,7 +901,7 @@ exports.mostrarFormularioEdicionCandidato = (req, res) => {
 
   // Consulta para obtener los datos del candidato
   db.query(
-    'SELECT * FROM aplicaciones WHERE id = ?',
+    'SELECT a.*, u.username as username FROM aplicaciones a JOIN users u ON a.user_id = u.id WHERE a.id = ?;',
     [candidatoId],
     (error, results) => {
       if (error) {
@@ -1003,17 +1003,97 @@ exports.eliminarCandidato = (req, res) => {
 };
 
 exports.mostrarCandidatos = (req, res) => {
-  db.query('SELECT a.*, p.nombre AS puesto_aplicado FROM aplicaciones a LEFT JOIN puestos p ON a.puesto_id = p.id', (error, results) => {
+  db.query('SELECT a.*,a.nombre AS puesto_aplicado, u.username AS nombre FROM aplicaciones a LEFT JOIN puestos p ON a.puesto_id = p.id LEFT JOIN users u ON a.user_id = u.id;', (error, results) => {
     if (error) {
       console.log(error);
       return res.status(500).send('Error al obtener los datos de las aplicaciones');
     }
+
+    console.log(results);
 
     res.render('admin/candidatos', {
       aplicaciones: results
     });
   });
 };
+
+// Controlador para contratar un candidato
+exports.contratarCandidato = (req, res) => {
+  const { id, salario_mensual } = req.body;
+
+  // Obtener los datos del candidato antes de eliminarlo
+  db.query(
+    'SELECT * FROM aplicaciones WHERE id = ?',
+    [id],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos del candidato');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Candidato no encontrado');
+      }
+
+      const candidato = results[0];
+
+      // Insertar los datos del candidato en la tabla empleados
+      db.query(
+        'INSERT INTO empleados (puesto_id, nombre, cedula, departamento, salario) VALUES (?, ?, ?, ?, ?)',
+        [candidato.puesto_id, candidato.nombre, candidato.cedula, candidato.departamento, salario_mensual],
+        (error, results) => {
+          if (error) {
+            console.log(error);
+            return res.status(500).send('Error al contratar el candidato');
+          }
+
+          // Eliminar la aplicación del candidato
+          db.query(
+            'DELETE FROM aplicaciones WHERE id = ?',
+            [id],
+            (error, results) => {
+              if (error) {
+                console.log(error);
+                return res.status(500).send('Error al eliminar la aplicación del candidato');
+              }
+
+              res.redirect('/auth/candidatos');
+            }
+          );
+        }
+      );
+    }
+  );
+};
+
+// Controlador para mostrar la vista de contratar candidato
+exports.mostrarFormularioContratarCandidato = (req, res) => {
+  const candidatoId = req.params.id;
+
+  // Consulta para obtener los datos del candidato
+  db.query(
+    'SELECT a.*, p.salario_minimo, p.salario_maximo, u.username FROM aplicaciones a JOIN puestos p ON a.puesto_id = p.id JOIN users u ON u.id = a.user_id WHERE a.id = ?',
+    [candidatoId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos del candidato');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Candidato no encontrado');
+      }
+
+      const candidato = results[0];
+
+      res.render('admin/contratar-candidato', {
+        candidato: candidato
+      });
+    }
+  );
+};
+
+
 
 // Obtener todos los puestos
 exports.obtenerPuestos = (req, res) => {

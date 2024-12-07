@@ -56,6 +56,9 @@ router.get('/editarCandidato/:id', authController.isLoggedIn, authController.mos
 router.post('/actualizarCandidato', authController.isLoggedIn, authController.actualizarCandidato);
 router.post('/eliminarCandidato', authController.isLoggedIn, authController.eliminarCandidato);
 router.get('/candidatos', authController.isLoggedIn, authController.mostrarCandidatos);
+router.post('/contratarCandidato', authController.isLoggedIn, authController.contratarCandidato);
+router.get('/contratarCandidato/:id', authController.isLoggedIn, authController.mostrarFormularioContratarCandidato);
+
 
 router.get('/puestos', authController.isLoggedIn, (req, res) => {
   db.query('SELECT id, nombre FROM puestos WHERE estado = "Activo"', (error, results) => {

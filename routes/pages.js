@@ -80,6 +80,10 @@ router.get('/editar-candidato',authController.isLoggedIn, (req, res) => {
   res.render('admin/editar-candidato');
 });
 
+router.get('/contratar-candidato',authController.isLoggedIn, (req, res) => {
+  res.render('admin/contratar-candidato');
+});
+
 router.get('/agregar-competencia',authController.isLoggedIn, (req, res) => {
   res.render('usuario/agregar-competencia');
 });

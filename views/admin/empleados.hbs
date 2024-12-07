@@ -12,52 +12,49 @@
             <h1>Gestión de Empleados</h1>
             <nav class="navigation">
                 <ul>
-                    <li><a href="/admin" class="nav-link">Volver al Panel Principal</a></li>
-                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                    <li><a href="/admin" class="nav-link">Panel de Administración</a></li>
+                    <li><a href="/logout" class="nav-link button-secondary">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </header>
         <main class="main-content">
             <section class="dashboard-section">
-                <h2>Lista de Empleados</h2>
                 <div class="button-container">
-                    <button class="button button-primary" onclick="mostrarFormulario()">Agregar Empleado</button>
+                    <a href="/agregar-empleado" class="button button-primary">Agregar Empleado</a>
                 </div>
                 <div class="crud-container">
                     <table class="crud-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Cédula</th>
                                 <th>Nombre</th>
-                                <th>Correo</th>
+                                <th>Fecha Ingreso</th>
                                 <th>Departamento</th>
-                                <th>Fecha de Contratación</th>
+                                <th>Puesto</th>
+                                <th>Salario Mensual</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {{#each empleados}}
                             <tr>
-                                <td>1</td>
-                                <td>Juan Pérez</td>
-                                <td>juan.perez@empresa.com</td>
-                                <td>Desarrollo</td>
-                                <td>2022-05-15</td>
+                                <td>{{this.cedula}}</td>
+                                <td>{{this.nombre}}</td>
+                                <td>{{this.fecha_ingreso}}</td>
+                                <td>{{this.departamento}}</td>
+                                <td>{{this.puesto}}</td>
+                                <td>{{this.salario_mensual}}</td>
                                 <td>
-                                    <button class="button button-small button-primary" onclick="editarEmpleado(1)">Editar</button>
-                                    <button class="button button-small button-danger" onclick="eliminarEmpleado(1)">Eliminar</button>
+                                    <form action="/auth/editarEmpleado/{{this.id}}" method="GET" class="inline-form">
+                                        <button type="submit" class="button button-small button-primary">Editar</button>
+                                    </form>
+                                    <form action="/auth/eliminarEmpleado" method="POST" class="inline-form">
+                                        <input type="hidden" name="id" value="{{this.id}}">
+                                        <button type="submit" class="button button-small button-danger">Eliminar</button>
+                                    </form>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>María González</td>
-                                <td>maria.gonzalez@empresa.com</td>
-                                <td>Recursos Humanos</td>
-                                <td>2021-11-01</td>
-                                <td>
-                                    <button class="button button-small button-primary" onclick="editarEmpleado(2)">Editar</button>
-                                    <button class="button button-small button-danger" onclick="eliminarEmpleado(2)">Eliminar</button>
-                                </td>
-                            </tr>
+                            {{/each}}
                         </tbody>
                     </table>
                 </div>
@@ -67,18 +64,5 @@
             <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
         </footer>
     </div>
-    <script>
-        function mostrarFormulario() {
-            alert('Mostrar formulario para agregar empleado');
-        }
-
-        function editarEmpleado(id) {
-            alert('Editar empleado con ID: ' + id);
-        }
-
-        function eliminarEmpleado(id) {
-            alert('Eliminar empleado con ID: ' + id);
-        }
-    </script>
 </body>
 </html>
