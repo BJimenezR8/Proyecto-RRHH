@@ -3,117 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Aplicaciones y Posiciones - Sistema de Reclutamiento de HR</title>
+    <title>Gestión de Trabajos - Sistema de Reclutamiento de HR</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>Gestión de Aplicaciones y Posiciones</h1>
+            <h1>Gestión de Trabajos</h1>
             <nav class="navigation">
                 <ul>
-                    <li><a href="/admin" class="nav-link">Volver al Panel Principal</a></li>
+                    <li><a href="/auth/admin" class="nav-link">Panel de Administración</a></li>
                     <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </header>
         <main class="main-content">
             <section class="dashboard-section">
-                <h2>Posiciones Abiertas</h2>
                 <div class="button-container">
-                    <button class="button button-primary" onclick="mostrarFormularioPosicion()">Crear Nueva Posición</button>
+                    <a href="/agregar-trabajo" class="button button-primary">Agregar Trabajo</a>
                 </div>
                 <div class="crud-container">
                     <table class="crud-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Título</th>
+                                <th>Nombre</th>
                                 <th>Departamento</th>
-                                <th>Fecha de Apertura</th>
+                                <th>Nivel de Riesgo</th>
+                                <th>Salario Mínimo</th>
+                                <th>Salario Máximo</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {{#each puestos}}
                             <tr>
-                                <td>1</td>
-                                <td>Desarrollador Frontend</td>
-                                <td>Tecnología</td>
-                                <td>2023-06-01</td>
-                                <td>Abierta</td>
+                                <td>{{this.nombre}}</td>
+                                <td>{{this.departamento}}</td>
+                                <td>{{this.nivel_riesgo}}</td>
+                                <td>{{this.salario_minimo}}</td>
+                                <td>{{this.salario_maximo}}</td>
+                                <td>{{this.estado}}</td>
                                 <td>
-                                    <button class="button button-small button-primary" onclick="editarPosicion(1)">Editar</button>
-                                    <button class="button button-small button-secondary" onclick="verAplicaciones(1)">Ver Aplicaciones</button>
-                                    <button class="button button-small button-danger" onclick="cerrarPosicion(1)">Cerrar</button>
+                                    <form action="/auth/editar-trabajo/{{this.id}}" method="GET" class="inline-form">
+                                        <button type="submit" class="button button-small button-primary">Editar</button>
+                                    </form>
+                                    <form action="/auth/eliminar-trabajo" method="POST" class="inline-form">
+                                        <input type="hidden" name="id" value="{{this.id}}">
+                                        <button type="submit" class="button button-small button-danger">Eliminar</button>
+                                    </form>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Analista de Recursos Humanos</td>
-                                <td>Recursos Humanos</td>
-                                <td>2023-06-15</td>
-                                <td>Abierta</td>
-                                <td>
-                                    <button class="button button-small button-primary" onclick="editarPosicion(2)">Editar</button>
-                                    <button class="button button-small button-secondary" onclick="verAplicaciones(2)">Ver Aplicaciones</button>
-                                    <button class="button button-small button-danger" onclick="cerrarPosicion(2)">Cerrar</button>
-                                </td>
-                            </tr>
+                            {{/each}}
                         </tbody>
                     </table>
                 </div>
-            </section>
-            <section id="formulario-posicion" class="dashboard-section" style="display: none;">
-                <h2>Crear Nueva Posición</h2>
-                <form class="form">
-                    <div class="form-group">
-                        <label for="titulo">Título de la Posición</label>
-                        <input type="text" id="titulo" name="titulo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="departamento">Departamento</label>
-                        <input type="text" id="departamento" name="departamento" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="requisitos">Requisitos</label>
-                        <textarea id="requisitos" name="requisitos" rows="4" required></textarea>
-                    </div>
-                    <div class="button-container">
-                        <button type="submit" class="button button-primary">Crear Posición</button>
-                        <button type="button" class="button button-secondary" onclick="ocultarFormularioPosicion()">Cancelar</button>
-                    </div>
-                </form>
             </section>
         </main>
         <footer class="footer">
             <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
         </footer>
     </div>
-    <script>
-        function mostrarFormularioPosicion() {
-            document.getElementById('formulario-posicion').style.display = 'block';
-        }
-
-        function ocultarFormularioPosicion() {
-            document.getElementById('formulario-posicion').style.display = 'none';
-        }
-
-        function editarPosicion(id) {
-            alert('Editar posición con ID: ' + id);
-        }
-
-        function verAplicaciones(id) {
-            alert('Ver aplicaciones para la posición con ID: ' + id);
-        }
-
-        function cerrarPosicion(id) {
-            alert('Cerrar posición con ID: ' + id);
-        }
-    </script>
 </body>
 </html>

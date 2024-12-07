@@ -68,4 +68,16 @@ router.get('/puestos', authController.isLoggedIn, (req, res) => {
 });
 
 
+router.get('/trabajos', authController.isLoggedIn, authController.obtenerPuestos);
+router.get('/trabajos/:id', authController.isLoggedIn, authController.obtenerPuestoPorId);
+router.post('/trabajos', authController.isLoggedIn, authController.crearPuesto);
+router.put('/trabajos/:id', authController.isLoggedIn, authController.actualizarPuesto);
+router.delete('/trabajos/:id', authController.isLoggedIn, authController.eliminarPuesto);
+router.get('/editar-trabajo/:id', authController.isLoggedIn, authController.mostrarFormularioEdicionTrabajo);
+
+router.post('/actualizarTrabajo', authController.isLoggedIn, authController.actualizarTrabajo);
+router.post('/eliminar-trabajo', authController.isLoggedIn, authController.eliminarTrabajo);
+router.post('/agregarTrabajo', authController.isLoggedIn, authController.agregarTrabajo);
+
+
 module.exports = router;

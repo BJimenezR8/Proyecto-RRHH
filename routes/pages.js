@@ -64,10 +64,21 @@ router.get('candidatos', authController.isLoggedIn,(req, res) => {
   res.render('admin/candidatos');
 });
 
+router.get('trabajos', authController.isLoggedIn,(req, res) => {
+  res.render('admin/trabajos');
+});
+
+router.get('/editar-trabajo', authController.isLoggedIn,(req, res) => {
+  res.render('admin/editar-trabajo/:id');
+});
+
+router.get('/agregar-trabajo', authController.isLoggedIn,(req, res) => {
+  res.render('admin/agregar-trabajo');
+});
+
 router.get('/editar-candidato',authController.isLoggedIn, (req, res) => {
   res.render('admin/editar-candidato');
 });
-
 
 router.get('/agregar-competencia',authController.isLoggedIn, (req, res) => {
   res.render('usuario/agregar-competencia');

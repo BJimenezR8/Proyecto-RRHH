@@ -1014,3 +1014,184 @@ exports.mostrarCandidatos = (req, res) => {
     });
   });
 };
+
+// Obtener todos los puestos
+exports.obtenerPuestos = (req, res) => {
+  db.query('SELECT * FROM puestos', (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).send('Error al obtener los puestos');
+    }
+    res.render('admin/trabajos', {
+      puestos: results
+    });
+  });
+};
+// Obtener un puesto por ID
+exports.obtenerPuestoPorId = (req, res) => {
+  const puestoId = req.params.id;
+  db.query('SELECT * FROM puestos WHERE id = ?', [puestoId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).send('Error al obtener el puesto');
+    }
+    if (results.length === 0) {
+      return res.status(404).send('Puesto no encontrado');
+    }
+    res.json(results[0]);
+  });
+};
+
+// Crear un nuevo puesto
+exports.crearPuesto = (req, res) => {
+  const { nombre, nivel_riesgo, salario_minimo, salario_maximo, estado } = req.body;
+  db.query(
+    'INSERT INTO puestos (nombre, nivel_riesgo, salario_minimo, salario_maximo, estado) VALUES (?, ?, ?, ?, ?)',
+    [nombre, nivel_riesgo, salario_minimo, salario_maximo, estado],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al crear el puesto');
+      }
+      res.status(201).send('Puesto creado exitosamente');
+    }
+  );
+};
+
+// Actualizar un puesto por ID
+exports.actualizarPuesto = (req, res) => {
+  const puestoId = req.params.id;
+  const { nombre, nivel_riesgo, salario_minimo, salario_maximo, estado } = req.body;
+  db.query(
+    'UPDATE puestos SET nombre = ?, nivel_riesgo = ?, salario_minimo = ?, salario_maximo = ?, estado = ? WHERE id = ?',
+    [nombre, nivel_riesgo, salario_minimo, salario_maximo, estado, puestoId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar el puesto');
+      }
+      if (results.affectedRows === 0) {
+        return res.status(404).send('Puesto no encontrado');
+      }
+      res.send('Puesto actualizado exitosamente');
+    }
+  );
+};
+
+// Eliminar un puesto por ID
+exports.eliminarPuesto = (req, res) => {
+  const puestoId = req.params.id;
+  db.query('DELETE FROM puestos WHERE id = ?', [puestoId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).send('Error al eliminar el puesto');
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).send('Puesto no encontrado');
+    }
+    res.send('Puesto eliminado exitosamente');
+  });
+};
+
+// Controlador para mostrar el formulario de edición de trabajo
+exports.mostrarFormularioEdicionTrabajo = (req, res) => {
+  const puestoId = req.params.id;
+
+  // Consulta para obtener los datos del puesto
+  db.query(
+    'SELECT * FROM puestos WHERE id = ?',
+    [puestoId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos del puesto');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Puesto no encontrado');
+      }
+
+      const puesto = results[0];
+
+      res.render('admin/editar-trabajo', {
+        puesto: puesto
+      });
+    }
+  );
+};
+
+// Controlador para actualizar un trabajo
+exports.actualizarTrabajo = (req, res) => {
+  const { id, nombre, nivel_riesgo, salario_minimo, salario_maximo, estado, departamento } = req.body;
+
+  db.query(
+    'UPDATE puestos SET nombre = ?, nivel_riesgo = ?, salario_minimo = ?, salario_maximo = ?, estado = ?, departamento = ? WHERE id = ?',
+    [nombre, nivel_riesgo, salario_minimo, salario_maximo, estado, departamento, id],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar el puesto');
+      }
+      if (results.affectedRows === 0) {
+        return res.status(404).send('Puesto no encontrado');
+      }
+      res.redirect('/auth/trabajos');
+    }
+  );
+};
+
+// Controlador para eliminar un trabajo
+exports.eliminarTrabajo = (req, res) => {
+  const { id } = req.body;
+
+  // Obtener los datos del trabajo antes de eliminarlo
+  db.query(
+    'SELECT * FROM puestos WHERE id = ?',
+    [id],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos del trabajo');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Trabajo no encontrado');
+      }
+
+      const trabajo = results[0];
+
+      // Imprimir los datos del trabajo en la consola
+      console.log('Trabajo a eliminar:', trabajo);
+
+      // Eliminar el trabajo
+      db.query(
+        'DELETE FROM puestos WHERE id = ?',
+        [id],
+        (error, results) => {
+          if (error) {
+            console.log(error);
+            return res.status(500).send('Error al eliminar el trabajo');
+          }
+
+          res.redirect('/auth/trabajos');
+        }
+      );
+    }
+  );
+};
+
+exports.agregarTrabajo = (req, res) => {
+  const { nombre, departamento, nivel_riesgo, salario_minimo, salario_maximo, estado } = req.body;
+
+  db.query(
+    'INSERT INTO puestos (nombre, departamento, nivel_riesgo, salario_minimo, salario_maximo, estado) VALUES (?, ?, ?, ?, ?, ?)',
+    [nombre, departamento, nivel_riesgo, salario_minimo, salario_maximo, estado],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al agregar el trabajo');
+      }
+      res.redirect('/auth/trabajos');
+    }
+  );
+};

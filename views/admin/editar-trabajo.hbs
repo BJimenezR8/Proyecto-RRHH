@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Trabajo - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Editar Trabajo</h1>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/auth/trabajos" class="nav-link">Volver a Gestión de Trabajos</a></li>
+                    <li><a href="/logout" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <div class="form-container">
+                    <form action="/auth/actualizarTrabajo" method="POST" class="form">
+                        <input type="hidden" name="id" value="{{puesto.id}}">
+                        
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" value="{{puesto.nombre}}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nivel_riesgo">Nivel de Riesgo:</label>
+                            <select id="nivel_riesgo" name="nivel_riesgo" required>
+                                <option value="Bajo">Bajo</option>
+                                <option value="Medio">Medio</option>
+                                <option value="Alto">Alto</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salario_minimo">Salario Mínimo:</label>
+                            <input type="number" id="salario_minimo" name="salario_minimo" value="{{puesto.salario_minimo}}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salario_maximo">Salario Máximo:</label>
+                            <input type="number" id="salario_maximo" name="salario_maximo" value="{{puesto.salario_maximo}}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="estado">Estado:</label>
+                            <select id="estado" name="estado" required>
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="departamento">Departamento:</label>
+                            <input type="text" id="departamento" name="departamento" value="{{puesto.departamento}}" required>
+                        </div>
+
+                        <div class="button-container">
+                            <button type="submit" class="button button-primary">Actualizar Trabajo</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nivelRiesgoSelect = document.getElementById('nivel_riesgo');
+            const estadoSelect = document.getElementById('estado');
+            const puesto = {
+                nivel_riesgo: "{{puesto.nivel_riesgo}}",
+                estado: "{{puesto.estado}}"
+            };
+
+            // Seleccionar el nivel de riesgo
+            for (let i = 0; i < nivelRiesgoSelect.options.length; i++) {
+                if (nivelRiesgoSelect.options[i].value === puesto.nivel_riesgo) {
+                    nivelRiesgoSelect.options[i].selected = true;
+                    break;
+                }
+            }
+
+            // Seleccionar el estado
+            for (let i = 0; i < estadoSelect.options.length; i++) {
+                if (estadoSelect.options[i].value === puesto.estado) {
+                    estadoSelect.options[i].selected = true;
+                    break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
