@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const moment = require('moment');
 
 const db = mysql.createConnection({
   host: process.env.DATABASE_HOST,
@@ -225,10 +226,9 @@ exports.getAplicacion = (req, res) => {
 
   const userId = req.user.id;
 
-
-  // Consulta para obtener las aplicaciones del usuario
+  // Consulta para obtener las aplicaciones del usuario con los campos adicionales
   db.query(
-    'SELECT a.id, p.nombre, p.nivel_riesgo, p.salario_minimo, p.salario_maximo, a.estado, DATE_FORMAT(a.fecha_aplicacion, "%d-%b-%Y") AS fecha_aplicacion FROM aplicaciones a JOIN puestos p ON a.puesto_id = p.id WHERE a.user_id = ?;',
+    'SELECT a.id, p.nombre, p.nivel_riesgo, p.salario_minimo, p.salario_maximo, a.estado, DATE_FORMAT(a.fecha_aplicacion, "%d-%b-%Y") AS fecha_aplicacion, a.departamento, a.salario_aspirante, a.recomendado_por FROM aplicaciones a JOIN puestos p ON a.puesto_id = p.id WHERE a.user_id = ?;',
     [userId],
     (error, results) => {
       if (error) {
@@ -259,11 +259,587 @@ exports.eliminarAplicacion = (req, res) => {
     (error, results) => {
       if (error) {
         console.log(error);
-        res.status(500).send('Error al eliminar la aplicación');
-      } else {
-        res.redirect('/auth/usuario');
+        return res.status(500).send('Error al eliminar la aplicación');
       }
+
+      res.redirect('/auth/usuario');
     }
   );
 };
 
+exports.mostrarFormularioCandidato = (req, res) => {
+  const { puestoId, nombre, departamento } = req.query;
+  const userId = req.user.id;
+  const cedula = req.user.cedula; // Asumiendo que la cédula está en req.user
+  const nombreUsuario = req.user.username;
+
+  res.render('usuario/formulario-candidato', {
+    puestoId,
+    nombre,
+    departamento,
+    userId,
+    cedula,
+    nombreUsuario
+  });
+};
+
+exports.guardarAplicacion = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { puestoId, cedula, nombre, departamento, salario_aspirante, recomendado_por } = req.body;
+  const userId = req.user.id;
+  const fechaAplicacion = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+
+  console.log(req.body); // Verifica los datos aquí
+
+  // Insertar en la tabla aplicaciones
+  db.query(
+    'INSERT INTO aplicaciones (user_id, puesto_id, fecha_aplicacion, cedula, nombre, departamento, salario_aspirante, recomendado_por, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [userId, puestoId, fechaAplicacion, cedula, nombre, departamento, salario_aspirante, recomendado_por, 'Activo'],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al aplicar al puesto');
+      }
+
+      res.redirect('/auth/usuario');
+    }
+  );
+};
+
+exports.mostrarFormularioEdicion = (req, res) => {
+  const aplicacionId = req.params.id;
+  const userId = req.user.id;
+
+  // Consulta para obtener los datos de la aplicación
+  db.query(
+    'SELECT * FROM aplicaciones WHERE id = ? AND user_id = ?',
+    [aplicacionId, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos de la aplicación');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Aplicación no encontrada');
+      }
+
+      const aplicacion = results[0];
+      res.render('usuario/formulario-candidato', {
+        puestoId: aplicacion.puesto_id,
+        cedula: aplicacion.cedula,
+        nombre: aplicacion.nombre,
+        departamento: aplicacion.departamento,
+        salario_aspirante: aplicacion.salario_aspirante,
+        recomendado_por: aplicacion.recomendado_por,
+        aplicacionId: aplicacion.id // Añadir el ID de la aplicación para la actualización
+      });
+    }
+  );
+};
+
+exports.actualizarAplicacion = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { aplicacionId, puestoId, cedula, nombre, departamento, salario_aspirante, recomendado_por } = req.body;
+  const userId = req.user.id;
+
+  // Consulta para actualizar la aplicación
+  db.query(
+    'UPDATE aplicaciones SET puesto_id = ?, cedula = ?, nombre = ?, departamento = ?, salario_aspirante = ?, recomendado_por = ? WHERE id = ? AND user_id = ?',
+    [puestoId, cedula, nombre, departamento, salario_aspirante, recomendado_por, aplicacionId, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar la aplicación');
+      }
+
+      res.redirect('/auth/usuario');
+    }
+  );
+};
+
+
+exports.mostrarPerfil = (req, res) => {
+  const userId = req.user.id;
+
+  // Consulta para obtener las competencias del usuario
+  const queryCompetencias = 'SELECT * FROM competencias WHERE id_user = ?';
+  const queryExperienciaLaboral = 'SELECT id, empresa, puesto_ocupado, DATE_FORMAT(fecha_desde, "%d-%b-%Y") AS fecha_desde, DATE_FORMAT(fecha_hasta, "%d-%b-%Y") AS fecha_hasta, salario FROM experiencia_laboral WHERE id_user = ?';
+  const queryIdiomas = 'SELECT * FROM idiomas WHERE id_user = ?';
+  const queryCapacitaciones = 'SELECT id, descripcion, institucion, DATE_FORMAT(fecha_inicio, "%d-%b-%Y") AS fecha_inicio, DATE_FORMAT(fecha_fin, "%d-%b-%Y") AS fecha_fin, descripcion FROM capacitaciones WHERE id_user = ?';
+
+  db.query(queryCompetencias, [userId], (errorCompetencias, competencias) => {
+    if (errorCompetencias) {
+      console.log(errorCompetencias);
+      return res.status(500).send('Error al obtener las competencias');
+    }
+
+    db.query(queryExperienciaLaboral, [userId], (errorExperiencia, experiencia_laboral) => {
+      if (errorExperiencia) {
+        console.log(errorExperiencia);
+        return res.status(500).send('Error al obtener la experiencia laboral');
+      }
+
+      db.query(queryIdiomas, [userId], (errorIdiomas, idiomas) => {
+        if (errorIdiomas) {
+          console.log(errorIdiomas);
+          return res.status(500).send('Error al obtener los idiomas');
+        }
+
+        db.query(queryCapacitaciones, [userId], (errorCapacitaciones, capacitaciones) => {
+          if (errorCapacitaciones) {
+            console.log(errorCapacitaciones);
+            return res.status(500).send('Error al obtener las capacitaciones');
+          }
+
+          res.render('usuario/perfil', {
+            competencias: competencias,
+            experiencia_laboral: experiencia_laboral,
+            idiomas: idiomas,
+            capacitaciones: capacitaciones,
+            username: req.user.username // Pasar el nombre de usuario a la vista
+          });
+        });
+      });
+    });
+  });
+};
+exports.agregarCompetencia = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { descripcion, estado } = req.body;
+  const userId = req.user.id;
+
+  // Insertar en la tabla competencias
+  db.query(
+    'INSERT INTO competencias (id_user, descripcion, estado) VALUES (?, ?, ?)',
+    [userId, descripcion, estado],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al agregar la competencia');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.editarCompetencia = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id, descripcion, estado } = req.body;
+  const userId = req.user.id;
+
+  // Actualizar la competencia
+  db.query(
+    'UPDATE competencias SET descripcion = ? WHERE id = ? AND id_user = ?',
+    [descripcion, id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar la competencia');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.eliminarCompetencia = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id } = req.body;
+  const userId = req.user.id;
+
+  // Eliminar la competencia
+  db.query(
+    'DELETE FROM competencias WHERE id = ? AND id_user = ?',
+    [id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al eliminar la competencia');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.mostrarFormularioEdicionCompetencia = (req, res) => {
+  const competenciaId = req.params.id;
+  const userId = req.user.id;
+
+  // Consulta para obtener los datos de la competencia
+  db.query(
+    'SELECT * FROM competencias WHERE id = ? AND id_user = ?',
+    [competenciaId, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos de la competencia');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Competencia no encontrada');
+      }
+
+      const competencia = results[0];
+      res.render('usuario/agregar-competencia', {
+        id: competencia.id,
+        descripcion: competencia.descripcion,
+        estado: competencia.estado
+      });
+    }
+  );
+};
+
+exports.actualizarCompetencia = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id, descripcion, estado } = req.body;
+  const userId = req.user.id;
+
+  // Actualizar la competencia
+  db.query(
+    'UPDATE competencias SET descripcion = ?, estado = ? WHERE id = ? AND id_user = ?',
+    [descripcion, estado, id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar la competencia');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+
+// Controladores para experiencia laboral
+exports.agregarExperiencia = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { empresa, puesto_ocupado, fecha_desde, fecha_hasta, salario } = req.body;
+  console.log("experiencia laboral"+ req.body);
+  const userId = req.user.id;
+
+  // Insertar en la tabla experiencia_laboral
+  db.query(
+    'INSERT INTO experiencia_laboral (id_user, empresa, puesto_ocupado, fecha_desde, fecha_hasta, salario) VALUES (?, ?, ?, ?, ?, ?)',
+    [userId, empresa, puesto_ocupado, fecha_desde, fecha_hasta, salario],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al agregar la experiencia laboral');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.mostrarFormularioEdicionExperiencia = (req, res) => {
+  const experienciaId = req.params.id;
+  const userId = req.user.id;
+
+  // Consulta para obtener los datos de la experiencia laboral
+  db.query(
+    'SELECT * FROM experiencia_laboral WHERE id = ? AND id_user = ?',
+    [experienciaId, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos de la experiencia laboral');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Experiencia laboral no encontrada');
+      }
+
+      const experiencia = results[0];
+      res.render('usuario/agregar-experiencia', {
+        id: experiencia.id,
+        empresa: experiencia.empresa,
+        puesto_ocupado: experiencia.puesto_ocupado,
+        fecha_desde: experiencia.fecha_desde,
+        fecha_hasta: experiencia.fecha_hasta,
+        salario: experiencia.salario
+      });
+    }
+  );
+};
+
+exports.actualizarExperiencia = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id, empresa, puesto_ocupado, fecha_desde, fecha_hasta, salario } = req.body;
+  const userId = req.user.id;
+
+  // Actualizar la experiencia laboral
+  db.query(
+    'UPDATE experiencia_laboral SET empresa = ?, puesto_ocupado = ?, fecha_desde = ?, fecha_hasta = ?, salario = ? WHERE id = ? AND id_user = ?',
+    [empresa, puesto_ocupado, fecha_desde, fecha_hasta, salario, id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar la experiencia laboral');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.eliminarExperiencia = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id } = req.body;
+  const userId = req.user.id;
+
+  // Eliminar la experiencia laboral
+  db.query(
+    'DELETE FROM experiencia_laboral WHERE id = ? AND id_user = ?',
+    [id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al eliminar la experiencia laboral');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+// Controladores para idiomas
+exports.agregarIdioma = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { nombre, nivel, estado } = req.body;
+  const userId = req.user.id;
+
+  // Insertar en la tabla idiomas
+  db.query(
+    'INSERT INTO idiomas (id_user, nombre, nivel, estado) VALUES (?, ?, ?, ?)',
+    [userId, nombre, nivel, estado],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al agregar el idioma');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.mostrarFormularioEdicionIdioma = (req, res) => {
+  const idiomaId = req.params.id;
+  const userId = req.user.id;
+
+  // Consulta para obtener los datos del idioma
+  db.query(
+    'SELECT * FROM idiomas WHERE id = ? AND id_user = ?',
+    [idiomaId, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos del idioma');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Idioma no encontrado');
+      }
+
+      const idioma = results[0];
+      res.render('usuario/agregar-idioma', {
+        id: idioma.id,
+        nombre: idioma.nombre,
+        nivel: idioma.nivel,
+        estado: idioma.estado
+      });
+    }
+  );
+};
+
+exports.actualizarIdioma = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id, nombre, nivel, estado } = req.body;
+  const userId = req.user.id;
+
+  // Actualizar el idioma
+  db.query(
+    'UPDATE idiomas SET nombre = ?, nivel = ?, estado = ? WHERE id = ? AND id_user = ?',
+    [nombre, nivel, estado, id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar el idioma');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.eliminarIdioma = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id } = req.body;
+  const userId = req.user.id;
+
+  // Eliminar el idioma
+  db.query(
+    'DELETE FROM idiomas WHERE id = ? AND id_user = ?',
+    [id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al eliminar el idioma');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+// Controladores para capacitaciones
+exports.agregarCapacitacion = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { descripcion, nivel, fecha_inicio, fecha_fin, institucion } = req.body;
+  const userId = req.user.id;
+
+  // Insertar en la tabla capacitaciones
+  db.query(
+    'INSERT INTO capacitaciones (id_user, descripcion, nivel, fecha_inicio, fecha_fin, institucion) VALUES (?, ?, ?, ?, ?, ?)',
+    [userId, descripcion, nivel, fecha_inicio, fecha_fin, institucion],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al agregar la capacitación');
+      }
+
+      // Imprimir los datos del registro agregado en la consola
+      console.log('Capacitación agregada:', {
+        id: results.insertId,
+        id_user: userId,
+        descripcion: descripcion,
+        nivel: nivel,
+        fecha_inicio: fecha_inicio,
+        fecha_fin: fecha_fin,
+        institucion: institucion
+      });
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.mostrarFormularioEdicionCapacitacion = (req, res) => {
+  const capacitacionId = req.params.id;
+  const userId = req.user.id;
+
+  // Consulta para obtener los datos de la capacitación
+  db.query(
+    'SELECT * FROM capacitaciones WHERE id = ? AND id_user = ?',
+    [capacitacionId, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos de la capacitación');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Capacitación no encontrada');
+      }
+
+      const capacitacion = results[0];
+      res.render('usuario/agregar-capacitacion', {
+        id: capacitacion.id,
+        descripcion: capacitacion.descripcion,
+        nivel: capacitacion.nivel,
+        fecha_inicio: capacitacion.fecha_inicio,
+        fecha_fin: capacitacion.fecha_fin,
+        institucion: capacitacion.institucion
+      });
+    }
+  );
+};
+
+exports.actualizarCapacitacion = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id, descripcion, nivel, fecha_inicio, fecha_fin, institucion } = req.body;
+  const userId = req.user.id;
+
+  // Actualizar la capacitación
+  db.query(
+    'UPDATE capacitaciones SET descripcion = ?, nivel = ?, fecha_inicio = ?, fecha_fin = ?, institucion = ? WHERE id = ? AND id_user = ?',
+    [descripcion, nivel, fecha_inicio, fecha_fin, institucion, id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar la capacitación');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.eliminarCapacitacion = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id } = req.body;
+  const userId = req.user.id;
+
+  // Eliminar la capacitación
+  db.query(
+    'DELETE FROM capacitaciones WHERE id = ? AND id_user = ?',
+    [id, userId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al eliminar la capacitación');
+      }
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};

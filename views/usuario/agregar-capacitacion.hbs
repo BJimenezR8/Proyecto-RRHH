@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if id}}Editar Capacitación{{else}}Agregar Capacitación{{/if}}</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/usuario" class="nav-link">Volver al Panel Principal</a></li>
+                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <form id="capacitacion-form" class="form" action="{{#if id}}/auth/actualizarCapacitacion{{else}}/auth/agregarCapacitacion{{/if}}" method="POST">
+                    {{#if id}}
+                        <input type="hidden" name="id" value="{{id}}">
+                    {{/if}}
+                    <div class="form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <input type="text" id="descripcion" name="descripcion" value="{{descripcion}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="institucion">Institución:</label>
+                        <input type="text" id="institucion" name="institucion" value="{{institucion}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nivel">Nivel:</label>
+                        <select id="nivel" name="nivel" required>
+                            <option value="Grado">Grado</option>
+                            <option value="Post-Grado">Post-Grado</option>
+                            <option value="Maestria">Maestría</option>
+                            <option value="Doctorado">Doctorado</option>
+                            <option value="Tecnico">Técnico</option>
+                            <option value="Gestion">Gestión</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha_inicio">Fecha de Inicio:</label>
+                        <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{fecha_inicio}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fecha_fin">Fecha de Fin:</label>
+                        <input type="date" id="fecha_fin" name="fecha_fin" value="{{fecha_fin}}" required>
+                    </div>
+                    <div class="button-container">
+                        <button type="submit" class="button button-primary">{{#if id}}Actualizar{{else}}Agregar{{/if}}</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nivelSelect = document.getElementById('nivel');
+            const nivelValue = '{{nivel}}';
+            if (nivelValue) {
+                nivelSelect.value = nivelValue;
+            }
+        });
+
+        document.getElementById('capacitacion-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {
+                descripcion: formData.get('descripcion'),
+                institucion: formData.get('institucion'),
+                nivel: formData.get('nivel'),
+                fecha_inicio: formData.get('fecha_inicio'),
+                fecha_fin: formData.get('fecha_fin')
+            };
+
+            fetch('{{#if id}}/auth/actualizarCapacitacion{{else}}/auth/agregarCapacitacion{{/if}}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/auth/perfil';
+                } else {
+                    return response.json().then(error => {
+                        throw new Error(error.message);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al guardar la capacitación:', error);
+                alert('Hubo un error al guardar la capacitación. Por favor, inténtalo de nuevo.');
+            });
+        });
+    </script>
+</body>
+</html>

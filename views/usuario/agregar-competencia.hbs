@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if id}}Editar Competencia{{else}}Agregar Competencia{{/if}} - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>{{#if id}}Editar Competencia{{else}}Agregar Competencia{{/if}}</h1>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/candidato-principal" class="nav-link">Volver al Panel Principal</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <form class="form" action="{{#if id}}/auth/actualizarCompetencia{{else}}/auth/agregarCompetencia{{/if}}" method="POST">
+                    {{#if id}}
+                        <input type="hidden" name="id" value="{{id}}">
+                    {{/if}}
+                    <div class="form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <input type="text" id="descripcion" name="descripcion" value="{{descripcion}}" required>
+                    </div>
+                    
+                    
+                    <div class="button-container">
+                        <button type="submit" class="button button-primary">{{#if id}}Actualizar{{else}}Agregar{{/if}}</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>

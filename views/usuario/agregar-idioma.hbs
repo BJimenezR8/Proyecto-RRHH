@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if id}}Editar Idioma{{else}}Agregar Idioma{{/if}} - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>{{#if id}}Editar Idioma{{else}}Agregar Idioma{{/if}}</h1>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/auth/perfil" class="nav-link">Volver al Perfil</a></li>
+                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <form class="form" action="{{#if id}}/auth/actualizarIdioma{{else}}/auth/agregarIdioma{{/if}}" method="POST">
+                    {{#if id}}
+                        <input type="hidden" name="id" value="{{id}}">
+                    {{/if}}
+                    <div class="form-group">
+                        <label for="nombre">Idioma:</label>
+                        <input type="text" id="nombre" name="nombre" value="{{nombre}}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nivel">Nivel:</label>
+                        <select id="nivel" name="nivel" required>
+                            <option value="Básico">Básico</option>
+                            <option value="Intermedio">Intermedio</option>
+                            <option value="Avanzado">Avanzado</option>
+                            <option value="Nativo">Nativo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-container">
+                        <button type="submit" class="button button-primary">{{#if id}}Actualizar{{else}}Agregar{{/if}}</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nivelSelect = document.getElementById('nivel');
+            const nivelValue = '{{nivel}}';
+            if (nivelValue) {
+                nivelSelect.value = nivelValue;
+            }
+        });
+    </script>
+</body>
+</html>

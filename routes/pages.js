@@ -52,6 +52,31 @@ router.get('/logout', (req, res) => {
   res.render('logout');
 });
 
+router.get('/formulario-candidatos', (req, res) => {
+  res.render('usuario/formulario-candidatos');
+});
+
+router.get('perfil', authController.isLoggedIn,(req, res) => {
+  res.render('usuario/perfil');
+});
+
+router.get('/agregar-competencia',authController.isLoggedIn, (req, res) => {
+  res.render('usuario/agregar-competencia');
+});
+
+router.get('/agregar-idioma', (req, res) => {
+  res.render('usuario/agregar-idioma');
+});
+
+router.get('/agregar-experiencia', (req, res) => {
+  res.render('usuario/agregar-experiencia');
+});
+
+router.get('/agregar-capacitacion', (req, res) => {
+  res.render('usuario/agregar-capacitacion');
+});
+
+
 router.get('/usuario', authController.isLoggedIn, (req, res) => {
   if (req.user) {
     if (req.user.rol === 'admin') {

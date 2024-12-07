@@ -14,6 +14,7 @@
             <nav class="navigation">
                 <ul>
                     <li><a href="#" class="nav-link">Página Principal</a></li>
+                    <li><a href="/auth/perfil" class="nav-link">Perfil</a></li>
                     <li><a href="/auth/puestos" class="nav-link">Aplicar a Posiciones</a></li>
                     <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
                 </ul>
@@ -29,6 +30,8 @@
                     <tr>
                         <th>Posición</th>
                         <th>Fecha de Aplicación</th>
+                        <th>Salario Esperado</th>
+                        <th>Recomendado por</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -38,12 +41,15 @@
                     <tr>
                         <td>{{this.nombre}}</td>
                         <td>{{this.fecha_aplicacion}}</td>
+                        <td>{{this.salario_aspirante}}</td>
+                        <td>{{this.recomendado_por}}</td>
                         <td>{{this.estado}}</td>
                         <td>
+                            <form action="/auth/editarAplicacion/{{this.id}}" method="GET" style="display:inline;">
+                                <button type="submit">Editar</button>
+                            </form>
                             <form action="/auth/eliminarAplicacion" method="POST">
                                 <input type="hidden" name="aplicacionId" value="{{this.id}}">
-                                <button class="button button-small">Ver</button>
-                                <button class="button button-small">Editar</button>
                                 <button class="button button-small button-danger" type="submit">Eliminar</button>
                             </form>
                         </td>

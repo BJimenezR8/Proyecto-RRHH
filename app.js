@@ -4,11 +4,15 @@ const dotenv = require('dotenv');
 const path = require('path');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+
 
 dotenv.config({ path: './.env' });
 
 
 const app = express();
+
+
 
 const db = mysql.createConnection({
   host: process.env.DATABASE_HOST,
@@ -22,7 +26,8 @@ const publicDirectory = path.join(__dirname, './public');
 app.use(express.static(publicDirectory));
 
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.set('view engine', 'hbs');
 

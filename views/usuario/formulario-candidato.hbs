@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Candidato - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <nav class="navigation">
+      <ul>
+        <li><a href="/auth/puestos" class="nav-link">Volver al Panel Principal</a></li>
+        <li><a href="#" class="nav-link button-secondary">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main class="main-content">
+    <section class="dashboard-section">
+      <h2>Información Adicional</h2>
+      <form class="form" id="candidato-form" action="{{#if aplicacionId}}/auth/actualizarAplicacion{{else}}/auth/guardarAplicacion{{/if}}" method="post">
+        {{#if aplicacionId}}
+          <input type="hidden" name="aplicacionId" value="{{aplicacionId}}">
+        {{/if}}
+        <input type="hidden" name="puestoId" value="{{puestoId}}">
+        <input type="hidden" name="cedula" value="{{cedula}}">
+        <input type="hidden" name="nombre" value="{{nombre}}">
+        <input type="hidden" name="departamento" value="{{departamento}}">
+        <div class="form-group">
+          <label for="salario-esperado">Salario Esperado:</label>
+          <input type="number" id="salario-esperado" name="salario_aspirante" value="{{salario_aspirante}}" required>
+        </div>
+        <div class="form-group">
+          <label for="recomendado-por">Recomendado por:</label>
+          <input type="text" id="recomendado-por" name="recomendado_por" value="{{recomendado_por}}">
+        </div>
+        <div class="button-container">
+          <button type="submit" class="button button-primary">{{#if aplicacionId}}Actualizar Información{{else}}Guardar Información{{/if}}</button>
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

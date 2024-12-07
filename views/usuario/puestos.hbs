@@ -22,7 +22,6 @@
             <section id="posiciones-disponibles" class="dashboard-section">
                 <h2>Posiciones Disponibles</h2>
                 <div class="crud-container">
-                    <form action="/auth/puestos" method="get">
                         <table class="crud-table">
                             <thead>
                                 <tr>
@@ -41,7 +40,7 @@
                                     <td>{{this.salario_minimo}}</td>
                                     <td>{{this.salario_maximo}}</td>
                                     <td>
-                                        <form action="/auth/aplicarPuesto" method="POST">
+                                        <form action="/auth/formulario-candidato" method="GET">
                                             <input type="hidden" name="puestoId" value="{{this.id}}">
                                             <input type="hidden" name="nombre" value="{{this.nombre}}">
                                             <input type="hidden" name="nivel_riesgo" value="{{this.nivel_riesgo}}">
@@ -55,7 +54,6 @@
                                 {{/each}}
                             </tbody>
                         </table>
-                    </form>
                 </div>
             </section>
             <section id="formulario-aplicacion" class="dashboard-section" style="display: none;">

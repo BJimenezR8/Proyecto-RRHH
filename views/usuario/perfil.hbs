@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Perfil de {{username}}</h1>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/usuario" class="nav-link">Volver al Panel Principal</a></li>
+                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <h2>Mis Competencias</h2>
+                <div class="crud-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each competencias}}
+                            <tr>
+                                <td>{{this.descripcion}}</td>
+                                <td>{{this.estado}}</td>
+                                <td>
+                                    <form action="/auth/editarCompetencia/{{this.id}}" method="GET" class="inline-form">
+                                        <button type="submit" class="button button-small button-primary">Editar</button>
+                                    </form>
+                                    <form action="/auth/eliminarCompetencia" method="POST" class="inline-form">
+                                        <input type="hidden" name="id" value="{{this.id}}">
+                                        <button type="submit" class="button button-small button-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button-container">
+                    <a href="/agregar-competencia" class="button button-primary">Agregar Competencia</a>
+                </div>
+            </section>
+
+            <section class="dashboard-section">
+                <h2>Mi Experiencia Laboral</h2>
+                <div class="crud-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Empresa</th>
+                                <th>Puesto Ocupado</th>
+                                <th>Fecha Desde</th>
+                                <th>Fecha Hasta</th>
+                                <th>Salario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each experiencia_laboral}}
+                            <tr>
+                                <td>{{this.empresa}}</td>
+                                <td>{{this.puesto_ocupado}}</td>
+                                <td>{{this.fecha_desde}}</td>
+                                <td>{{this.fecha_hasta}}</td>
+                                <td>{{this.salario}}</td>
+                                <td>
+                                    <form action="/auth/editarExperiencia/{{this.id}}" method="GET" class="inline-form">
+                                        <button type="submit" class="button button-small button-primary">Editar</button>
+                                    </form>
+                                    <form action="/auth/eliminarExperiencia" method="POST" class="inline-form">
+                                        <input type="hidden" name="id" value="{{this.id}}">
+                                        <button type="submit" class="button button-small button-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button-container">
+                    <a href="/agregar-experiencia" class="button button-primary">Agregar Experiencia</a>
+                </div>
+            </section>
+
+            <section class="dashboard-section">
+                <h2>Mis Idiomas</h2>
+                <div class="crud-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Idioma</th>
+                                <th>Nivel</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each idiomas}}
+                            <tr>
+                                <td>{{this.nombre}}</td>
+                                <td>{{this.nivel}}</td>
+                                <td>{{this.estado}}</td>
+                                <td>
+                                    <form action="/auth/editarIdioma/{{this.id}}" method="GET" class="inline-form">
+                                        <button type="submit" class="button button-small button-primary">Editar</button>
+                                    </form>
+                                    <form action="/auth/eliminarIdioma" method="POST" class="inline-form">
+                                        <input type="hidden" name="id" value="{{this.id}}">
+                                        <button type="submit" class="button button-small button-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button-container">
+                    <a href="/agregar-idioma" class="button button-primary">Agregar Idioma</a>
+                </div>
+            </section>
+
+            <section class="dashboard-section">
+                <h2>Mis Capacitaciones</h2>
+                <div class="crud-container">
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Capacitación</th>
+                                <th>Institución</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each capacitaciones}}
+                            <tr>
+                                <td>{{this.descripcion}}</td>
+                                <td>{{this.institucion}}</td>
+                                <td>{{this.fecha_inicio}}</td>
+                                <td>{{this.fecha_fin}}</td>
+                                <td>{{this.descripcion}}</td>
+                                <td>
+                                    <form action="/auth/editarCapacitacion/{{this.id}}" method="GET" class="inline-form">
+                                        <button type="submit" class="button button-small button-primary">Editar</button>
+                                    </form>
+                                    <form action="/auth/eliminarCapacitacion" method="POST" class="inline-form">
+                                        <input type="hidden" name="id" value="{{this.id}}">
+                                        <button type="submit" class="button button-small button-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button-container">
+                    <a href="/agregar-capacitacion" class="button button-primary">Agregar Capacitación</a>
+                </div>
+            </section>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+</body>
+</html>
