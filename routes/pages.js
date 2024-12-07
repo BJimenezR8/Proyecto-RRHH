@@ -60,6 +60,15 @@ router.get('perfil', authController.isLoggedIn,(req, res) => {
   res.render('usuario/perfil');
 });
 
+router.get('candidatos', authController.isLoggedIn,(req, res) => {
+  res.render('admin/candidatos');
+});
+
+router.get('/editar-candidato',authController.isLoggedIn, (req, res) => {
+  res.render('admin/editar-candidato');
+});
+
+
 router.get('/agregar-competencia',authController.isLoggedIn, (req, res) => {
   res.render('usuario/agregar-competencia');
 });
@@ -90,5 +99,6 @@ router.get('/usuario', authController.isLoggedIn, (req, res) => {
     res.redirect('/login');
   }
 });
+
 
 module.exports = router;

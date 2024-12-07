@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Candidato - Sistema de Reclutamiento de HR</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Editar Candidato</h1>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/auth/candidatos" class="nav-link">Volver a Gestión de Candidatos</a></li>
+                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <section class="dashboard-section">
+                <div class="form-container">
+                    <form action="/auth/actualizarCandidato" method="POST" class="form">
+                        <input type="hidden" name="id" value="{{candidato.id}}">
+                        
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" value="{{candidato.nombre}}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cedula">Cédula:</label>
+                            <input type="text" id="cedula" name="cedula" value="{{candidato.cedula}}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="departamento">Departamento:</label>
+                            <input type="text" id="departamento" name="departamento" value="{{candidato.departamento}}" required>
+                        </div>
+
+                        {{!-- <div class="form-group">
+                            <label for="puesto_aplicado">Puesto Aplicado:</label>
+                            <select id="puesto_aplicado" name="puesto_id" required>
+                                <option value="">Seleccione un puesto</option>
+                            </select>
+                        </div> --}}
+
+                        <div class="form-group">
+                            <label for="recomendado_por">Recomendado por:</label>
+                            <input type="text" id="recomendado_por" name="recomendado_por" value="{{candidato.recomendado_por}}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salario_aspirante">Salario Aspirante:</label>
+                            <input type="number" id="salario_aspirante" name="salario_aspirante" value="{{candidato.salario_aspirante}}" required>
+                        </div>
+
+                        <div class="button-container">
+                            <button type="submit" class="button button-primary">Actualizar Candidato</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+        <footer class="footer">
+            <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/auth/puestos')
+                .then(response => response.json())
+                .then(data => {
+                    const puestoSelect = document.getElementById('puesto_aplicado');
+                    const selectedPuestoId = {{candidato.puesto_id}};
+                    data.forEach(puesto => {
+                        const option = document.createElement('option');
+                        option.value = puesto.id;
+                        option.textContent = puesto.nombre;
+                        if (puesto.id === selectedPuestoId) {
+                            option.selected = true;
+                        }
+                        puestoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar los puestos:', error));
+        });
+    </script>
+</body>
+</html>

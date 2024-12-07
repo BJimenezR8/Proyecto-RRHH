@@ -288,24 +288,41 @@ exports.guardarAplicacion = (req, res) => {
     return res.status(401).send('No autorizado');
   }
 
-  const { puestoId, cedula, nombre, departamento, salario_aspirante, recomendado_por } = req.body;
+  const { puestoId, cedula, nombre, salario_aspirante, recomendado_por } = req.body;
   const userId = req.user.id;
   const fechaAplicacion = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
 
   console.log(req.body); // Verifica los datos aquí
 
-  // Insertar en la tabla aplicaciones
   db.query(
-    'INSERT INTO aplicaciones (user_id, puesto_id, fecha_aplicacion, cedula, nombre, departamento, salario_aspirante, recomendado_por, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [userId, puestoId, fechaAplicacion, cedula, nombre, departamento, salario_aspirante, recomendado_por, 'Activo'],
+    'SELECT departamento FROM puestos WHERE id = ?',
+    [puestoId],
     (error, results) => {
       if (error) {
         console.log(error);
-        return res.status(500).send('Error al aplicar al puesto');
+        return res.status(500).send('Error al obtener el departamento del puesto');
       }
 
-      res.redirect('/auth/usuario');
-    }
+      if (results.length === 0) {
+        return res.status(404).send('Puesto no encontrado');
+      }
+
+      const departamento = results[0].departamento;
+
+    // Insertar en la tabla aplicaciones
+    db.query(
+      'INSERT INTO aplicaciones (user_id, puesto_id, fecha_aplicacion, cedula, nombre, departamento, salario_aspirante, recomendado_por, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, puestoId, fechaAplicacion, cedula, nombre, departamento, salario_aspirante, recomendado_por, 'Activo'],
+      (error, results) => {
+        if (error) {
+          console.log(error);
+          return res.status(500).send('Error al aplicar al puesto');
+        }
+
+        res.redirect('/auth/usuario');
+      }
+    );
+   }
   );
 };
 
@@ -842,4 +859,158 @@ exports.eliminarCapacitacion = (req, res) => {
       res.redirect('/auth/perfil');
     }
   );
+};
+
+// Controladores para candidatos
+exports.agregarCandidato = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { cedula, nombre, departamento, salario_aspirante, recomdado_por } = req.body;
+  const userId = req.user.id;
+
+  // Insertar en la tabla candidatos
+  db.query(
+    'INSERT INTO candidatos (user_id, cedula, nombre, departamento, salario_aspirante, recomdado_por) VALUES (?, ?, ?, ?, ?, ?)',
+    [userId, cedula, nombre, departamento, salario_aspirante, recomdado_por],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al agregar el candidato');
+      }
+
+      // Imprimir los datos del registro agregado en la consola
+      console.log('Candidato agregado:', {
+        id: results.insertId,
+        user_id: userId,
+        cedula: cedula,
+        nombre: nombre,
+        departamento: departamento,
+        salario_aspirante: salario_aspirante,
+        recomdado_por: recomdado_por
+      });
+
+      res.redirect('/auth/perfil');
+    }
+  );
+};
+
+exports.mostrarFormularioEdicionCandidato = (req, res) => {
+  const candidatoId = req.params.id;
+
+  // Consulta para obtener los datos del candidato
+  db.query(
+    'SELECT * FROM aplicaciones WHERE id = ?',
+    [candidatoId],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos del candidato');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Candidato no encontrado');
+      }
+
+      const candidato = results[0];
+
+      // Consulta para obtener los nombres de puestos únicos
+      db.query(
+        'SELECT id, nombre FROM puestos WHERE estado = "Activo"',
+        (error, puestos) => {
+          if (error) {
+            console.log(error);
+            return res.status(500).send('Error al obtener los puestos disponibles');
+          }
+
+          // Imprimir los puestos obtenidos en la consola
+          console.log('Puestos disponibles:', puestos);
+
+          res.render('admin/editar-candidato', {
+            candidato: candidato,
+            puestos_disponibles: puestos
+          });
+        }
+      );
+    }
+  );
+};
+
+exports.actualizarCandidato = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id, nombre, cedula, departamento, recomendado_por, salario_aspirante } = req.body;
+
+  // Actualizar el candidato
+  db.query(
+    'UPDATE aplicaciones SET nombre = ?, cedula = ?, departamento = ?,  recomendado_por = ?, salario_aspirante = ? WHERE id = ?',
+    [nombre, cedula, departamento, recomendado_por, salario_aspirante, id],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar el candidato');
+      }
+
+      res.redirect('/auth/candidatos');
+    }
+  );
+};
+
+exports.eliminarCandidato = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send('No autorizado');
+  }
+
+  const { id } = req.body;
+
+  // Obtener los datos del candidato antes de eliminarlo
+  db.query(
+    'SELECT * FROM aplicaciones WHERE id = ?',
+    [id],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los datos del candidato');
+      }
+
+      if (results.length === 0) {
+        return res.status(404).send('Candidato no encontrado');
+      }
+
+      const candidato = results[0];
+
+      // Imprimir los datos del candidato en la consola
+      console.log('Candidato a eliminar:', candidato);
+
+      // Eliminar el candidato
+      db.query(
+        'DELETE FROM aplicaciones WHERE id = ?',
+        [id],
+        (error, results) => {
+          if (error) {
+            console.log(error);
+            return res.status(500).send('Error al eliminar el candidato');
+          }
+
+          res.redirect('/auth/candidatos');
+        }
+      );
+    }
+  );
+};
+
+exports.mostrarCandidatos = (req, res) => {
+  db.query('SELECT a.*, p.nombre AS puesto_aplicado FROM aplicaciones a LEFT JOIN puestos p ON a.puesto_id = p.id', (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).send('Error al obtener los datos de las aplicaciones');
+    }
+
+    res.render('admin/candidatos', {
+      aplicaciones: results
+    });
+  });
 };

@@ -12,57 +12,46 @@
             <h1>Gestión de Candidatos</h1>
             <nav class="navigation">
                 <ul>
-                    <li><a href="/admin" class="nav-link">Volver al Panel Principal</a></li>
-                    <li><a href="/login" class="nav-link button-secondary">Cerrar Sesión</a></li>
+                    <li><a href="/admin" class="nav-link">Panel de Administración</a></li>
+                    <li><a href="/logout" class="nav-link button-secondary">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </header>
         <main class="main-content">
             <section class="dashboard-section">
-                <h2>Lista de Candidatos</h2>
-                <div class="button-container">
-                    <button class="button button-primary" onclick="mostrarFormulario()">Agregar Candidato</button>
-                </div>
                 <div class="crud-container">
                     <table class="crud-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Cédula</th>
                                 <th>Nombre</th>
-                                <th>Correo</th>
-                                <th>Posición Aplicada</th>
-                                <th>Fecha de Aplicación</th>
-                                <th>Estado</th>
+                                <th>Departamento</th>
+                                <th>Puesto Aplicado</th>
+                                <th>Salario Aspirante</th>
+                                <th>Recomendado Por</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {{#each aplicaciones}}
                             <tr>
-                                <td>1</td>
-                                <td>Ana Rodríguez</td>
-                                <td>ana.rodriguez@email.com</td>
-                                <td>Desarrollador Frontend</td>
-                                <td>2023-06-15</td>
-                                <td>En revisión</td>
+                                <td>{{this.cedula}}</td>
+                                <td>{{this.nombre}}</td>
+                                <td>{{this.departamento}}</td>
+                                <td>{{this.puesto_aplicado}}</td>
+                                <td>{{this.salario_aspirante}}</td>
+                                <td>{{this.recomendado_por}}</td>
                                 <td>
-                                    <button class="button button-small button-primary" onclick="editarCandidato(1)">Editar</button>
-                                    <button class="button button-small button-danger" onclick="eliminarCandidato(1)">Eliminar</button>
-                                    <button class="button button-small button-success" onclick="contratarCandidato(1)">Contratar</button>
+                                    <form action="/auth/editarCandidato/{{this.id}}" method="GET" class="inline-form">
+                                        <button type="submit" class="button button-small button-primary">Editar</button>
+                                    </form>
+                                    <form action="/auth/eliminarCandidato" method="POST" class="inline-form">
+                                        <input type="hidden" name="id" value="{{this.id}}">
+                                        <button type="submit" class="button button-small button-danger">Eliminar</button>
+                                    </form>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Carlos Gómez</td>
-                                <td>carlos.gomez@email.com</td>
-                                <td>Analista de Datos</td>
-                                <td>2023-06-10</td>
-                                <td>Entrevista programada</td>
-                                <td>
-                                    <button class="button button-small button-primary" onclick="editarCandidato(2)">Editar</button>
-                                    <button class="button button-small button-danger" onclick="eliminarCandidato(2)">Eliminar</button>
-                                    <button class="button button-small button-success" onclick="contratarCandidato(2)">Contratar</button>
-                                </td>
-                            </tr>
+                            {{/each}}
                         </tbody>
                     </table>
                 </div>
@@ -72,22 +61,5 @@
             <p>&copy; 2023 Sistema de Reclutamiento de HR. Todos los derechos reservados.</p>
         </footer>
     </div>
-    <script>
-        function mostrarFormulario() {
-            alert('Mostrar formulario para agregar candidato');
-        }
-
-        function editarCandidato(id) {
-            alert('Editar candidato con ID: ' + id);
-        }
-
-        function eliminarCandidato(id) {
-            alert('Eliminar candidato con ID: ' + id);
-        }
-
-        function contratarCandidato(id) {
-            alert('Contratar candidato con ID: ' + id);
-        }
-    </script>
 </body>
 </html>

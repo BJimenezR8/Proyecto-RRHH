@@ -51,5 +51,21 @@ router.get('/editarCapacitacion/:id', authController.isLoggedIn, authController.
 router.post('/actualizarCapacitacion', authController.isLoggedIn, authController.actualizarCapacitacion);
 router.post('/eliminarCapacitacion', authController.isLoggedIn, authController.eliminarCapacitacion);
 
+router.post('/agregarCandidato', authController.isLoggedIn, authController.agregarCandidato);
+router.get('/editarCandidato/:id', authController.isLoggedIn, authController.mostrarFormularioEdicionCandidato);
+router.post('/actualizarCandidato', authController.isLoggedIn, authController.actualizarCandidato);
+router.post('/eliminarCandidato', authController.isLoggedIn, authController.eliminarCandidato);
+router.get('/candidatos', authController.isLoggedIn, authController.mostrarCandidatos);
+
+router.get('/puestos', authController.isLoggedIn, (req, res) => {
+  db.query('SELECT id, nombre FROM puestos WHERE estado = "Activo"', (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).send('Error al obtener los puestos disponibles');
+    }
+    res.json(results);
+  });
+});
+
 
 module.exports = router;
