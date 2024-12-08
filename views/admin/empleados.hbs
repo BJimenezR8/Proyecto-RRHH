@@ -19,33 +19,32 @@
         </header>
         <main class="main-content">
             <section class="dashboard-section">
-                <div class="button-container">
-                    <a href="/agregar-empleado" class="button button-primary">Agregar Empleado</a>
-                </div>
-                <div class="crud-container">
+                <div class="table-container">
                     <table class="crud-table">
                         <thead>
                             <tr>
-                                <th>Cédula</th>
+                                <th>ID</th>
                                 <th>Nombre</th>
-                                <th>Fecha Ingreso</th>
-                                <th>Departamento</th>
+                                <th>Cédula</th>
                                 <th>Puesto</th>
-                                <th>Salario Mensual</th>
+                                <th>Departamento</th>
+                                <th>Salario</th>
+                                <th>Fecha Ingreso</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {{#each empleados}}
                             <tr>
-                                <td>{{this.cedula}}</td>
+                                <td>{{this.id}}</td>
                                 <td>{{this.nombre}}</td>
-                                <td>{{this.fecha_ingreso}}</td>
-                                <td>{{this.departamento}}</td>
+                                <td>{{this.cedula}}</td>
                                 <td>{{this.puesto}}</td>
-                                <td>{{this.salario_mensual}}</td>
+                                <td>{{this.departamento}}</td>
+                                <td>{{this.salario}}</td>
+                                <td>{{this.fecha_ingreso}}</td>
                                 <td>
-                                    <form action="/auth/editarEmpleado/{{this.id}}" method="GET" class="inline-form">
+                                    <form action="/auth/empleados/{{this.id}}" method="GET" class="inline-form">
                                         <button type="submit" class="button button-small button-primary">Editar</button>
                                     </form>
                                     <form action="/auth/eliminarEmpleado" method="POST" class="inline-form">

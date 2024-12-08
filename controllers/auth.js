@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const moment = require('moment');
+const PDFDocument = require('pdfkit');
 
 const db = mysql.createConnection({
   host: process.env.DATABASE_HOST,
@@ -867,13 +868,14 @@ exports.agregarCandidato = (req, res) => {
     return res.status(401).send('No autorizado');
   }
 
-  const { cedula, nombre, departamento, salario_aspirante, recomdado_por } = req.body;
+  const { cedula, departamento, salario_aspirante, recomdado_por } = req.body;
   const userId = req.user.id;
+  const nombreUsuario = req.user.nombre; // Obtener el nombre del usuario registrado
 
   // Insertar en la tabla candidatos
   db.query(
     'INSERT INTO candidatos (user_id, cedula, nombre, departamento, salario_aspirante, recomdado_por) VALUES (?, ?, ?, ?, ?, ?)',
-    [userId, cedula, nombre, departamento, salario_aspirante, recomdado_por],
+    [userId, cedula, nombreUsuario, departamento, salario_aspirante, recomdado_por],
     (error, results) => {
       if (error) {
         console.log(error);
@@ -885,7 +887,7 @@ exports.agregarCandidato = (req, res) => {
         id: results.insertId,
         user_id: userId,
         cedula: cedula,
-        nombre: nombre,
+        nombre: nombreUsuario,
         departamento: departamento,
         salario_aspirante: salario_aspirante,
         recomdado_por: recomdado_por
@@ -895,7 +897,6 @@ exports.agregarCandidato = (req, res) => {
     }
   );
 };
-
 exports.mostrarFormularioEdicionCandidato = (req, res) => {
   const candidatoId = req.params.id;
 
@@ -1019,11 +1020,11 @@ exports.mostrarCandidatos = (req, res) => {
 
 // Controlador para contratar un candidato
 exports.contratarCandidato = (req, res) => {
-  const { id, salario_mensual } = req.body;
+  const { id, salario_mensual, fecha_ingreso } = req.body;
 
   // Obtener los datos del candidato antes de eliminarlo
   db.query(
-    'SELECT * FROM aplicaciones WHERE id = ?',
+    'SELECT a.*, u.username FROM aplicaciones a join users u on u.id=a.user_id WHERE a.id = ?',
     [id],
     (error, results) => {
       if (error) {
@@ -1036,11 +1037,12 @@ exports.contratarCandidato = (req, res) => {
       }
 
       const candidato = results[0];
+      const fechaIngreso = new Date().toISOString().slice(0, 10); // Obtener la fecha actual en formato YYYY-MM-DD
 
       // Insertar los datos del candidato en la tabla empleados
       db.query(
-        'INSERT INTO empleados (puesto_id, nombre, cedula, departamento, salario) VALUES (?, ?, ?, ?, ?)',
-        [candidato.puesto_id, candidato.nombre, candidato.cedula, candidato.departamento, salario_mensual],
+        'INSERT INTO empleados (puesto_id, nombre, cedula, departamento, salario, fecha_ingreso) VALUES (?, ?, ?, ?, ?, ?)',
+        [candidato.puesto_id, candidato.username, candidato.cedula, candidato.departamento, salario_mensual, fecha_ingreso],
         (error, results) => {
           if (error) {
             console.log(error);
@@ -1274,4 +1276,148 @@ exports.agregarTrabajo = (req, res) => {
       res.redirect('/auth/trabajos');
     }
   );
+};
+
+// Obtener todos los empleados
+exports.obtenerEmpleados = (req, res) => {
+  db.query(`
+    SELECT e.id, e.puesto_id, e.nombre, e.cedula, e.departamento, e.salario, p.nombre as puesto,
+           DATE_FORMAT(e.fecha_ingreso, '%d-%b-%Y') AS fecha_ingreso 
+    FROM empleados e join puestos p on e.puesto_id = p.id; `, 
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener los empleados');
+      }
+      res.render('admin/empleados', {
+        empleados: results
+      });
+    }
+  );
+};
+
+// Obtener un empleado por ID
+exports.obtenerEmpleadoPorId = (req, res) => {
+  const empleadoId = req.params.id;
+  db.query(`
+    SELECT id, puesto_id, nombre, cedula, departamento, salario, 
+           DATE_FORMAT(fecha_ingreso, '%d-%b-%Y') AS fecha_ingreso 
+    FROM empleados WHERE id = ?`, 
+    [empleadoId], 
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al obtener el empleado');
+      }
+      if (results.length === 0) {
+        return res.status(404).send('Empleado no encontrado');
+      }
+      res.render('admin/editar-empleado', {
+        empleado: results[0]
+      });
+    }
+  );
+};
+// Crear un nuevo empleado
+exports.crearEmpleado = (req, res) => {
+  const { puesto_id, nombre, cedula, departamento, salario } = req.body;
+  db.query(
+    'INSERT INTO empleados (puesto_id, nombre, cedula, departamento, salario) VALUES (?, ?, ?, ?, ?)',
+    [puesto_id, nombre, cedula, departamento, salario],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al crear el empleado');
+      }
+      res.redirect('/auth/empleados');
+    }
+  );
+};
+
+// Actualizar un empleado por ID
+exports.actualizarEmpleado = (req, res) => {
+  const { id, puesto_id, nombre, cedula, departamento, salario } = req.body;
+  db.query(
+    'UPDATE empleados SET puesto_id = ?, nombre = ?, cedula = ?, departamento = ?, salario = ? WHERE id = ?',
+    [puesto_id, nombre, cedula, departamento, salario, id],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error al actualizar el empleado');
+      }
+      if (results.affectedRows === 0) {
+        return res.status(404).send('Empleado no encontrado');
+      }
+      res.redirect('/auth/empleados');
+    }
+  );
+};
+// Eliminar un empleado por ID
+exports.eliminarEmpleado = (req, res) => {
+  const empleadoId = req.body.id;
+  db.query('DELETE FROM empleados WHERE id = ?', [empleadoId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).send('Error al eliminar el empleado');
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).send('Empleado no encontrado');
+    }
+    res.redirect('/auth/empleados');
+  });
+};
+
+exports.generarReportePDF = (req, res) => {
+  const { salario_minimo, salario_maximo, fecha_ingreso_inicial, fecha_ingreso_final } = req.query;
+
+  let query = 'SELECT * FROM empleados WHERE 1=1';
+  const queryParams = [];
+
+  if (salario_minimo) {
+    query += ' AND salario >= ?';
+    queryParams.push(salario_minimo);
+  }
+
+  if (salario_maximo) {
+    query += ' AND salario <= ?';
+    queryParams.push(salario_maximo);
+  }
+
+  if (fecha_ingreso_inicial) {
+    query += ' AND fecha_ingreso >= ?';
+    queryParams.push(fecha_ingreso_inicial);
+  }
+
+  if (fecha_ingreso_final) {
+    query += ' AND fecha_ingreso <= ?';
+    queryParams.push(fecha_ingreso_final);
+  }
+
+  db.query(query, queryParams, (error, results) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).send('Error al generar el reporte');
+    }
+
+    const doc = new PDFDocument();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=reporte.pdf');
+
+    doc.pipe(res);
+
+    doc.fontSize(18).text('Reporte de Empleados', { align: 'center' });
+    doc.moveDown();
+
+    results.forEach(empleado => {
+      doc.fontSize(12).text(`ID: ${empleado.id}`);
+      doc.text(`Nombre: ${empleado.nombre}`);
+      doc.text(`Cédula: ${empleado.cedula}`);
+      doc.text(`Departamento: ${empleado.departamento}`);
+      doc.text(`Salario: ${empleado.salario}`);
+      doc.text(`Fecha de Ingreso: ${empleado.fecha_ingreso}`);
+      doc.moveDown();
+    });
+
+    doc.end();
+  });
 };

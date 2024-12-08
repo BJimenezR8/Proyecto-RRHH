@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generar Reporte - Sistema de Reclutamiento de HR</title>
+    <title>Editar Empleado - Sistema de Reclutamiento de HR</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>Generar Reporte</h1>
+            <h1>Editar Empleado</h1>
             <nav class="navigation">
                 <ul>
-                    <li><a href="/admin" class="nav-link">Panel de Administración</a></li>
+                    <li><a href="/auth/empleados" class="nav-link">Volver a Gestión de Empleados</a></li>
                     <li><a href="/logout" class="nav-link button-secondary">Cerrar Sesión</a></li>
                 </ul>
             </nav>
@@ -20,29 +20,31 @@
         <main class="main-content">
             <section class="dashboard-section">
                 <div class="form-container">
-                    <form action="/auth/generarReportePDF" method="GET" class="form">
+                    <form action="/auth/actualizarEmpleado" method="POST" class="form">
+                        <input type="hidden" name="id" value="{{empleado.id}}">
+                        
                         <div class="form-group">
-                            <label for="salario_minimo">Salario Mínimo:</label>
-                            <input type="number" id="salario_minimo" name="salario_minimo">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" id="nombre" name="nombre" value="{{empleado.nombre}}" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="salario_maximo">Salario Máximo:</label>
-                            <input type="number" id="salario_maximo" name="salario_maximo">
+                            <label for="cedula">Cédula:</label>
+                            <input type="text" id="cedula" name="cedula" value="{{empleado.cedula}}" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="fecha_ingreso_inicial">Fecha de Ingreso Inicial:</label>
-                            <input type="date" id="fecha_ingreso_inicial" name="fecha_ingreso_inicial">
+                            <label for="departamento">Departamento:</label>
+                            <input type="text" id="departamento" name="departamento" value="{{empleado.departamento}}" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="fecha_ingreso_final">Fecha de Ingreso Final:</label>
-                            <input type="date" id="fecha_ingreso_final" name="fecha_ingreso_final">
+                            <label for="salario">Salario:</label>
+                            <input type="number" id="salario" name="salario" value="{{empleado.salario}}" required>
                         </div>
 
                         <div class="button-container">
-                            <button type="submit" class="button button-primary">Generar Reporte</button>
+                            <button type="submit" class="button button-primary">Actualizar Empleado</button>
                         </div>
                     </form>
                 </div>

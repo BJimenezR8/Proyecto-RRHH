@@ -82,5 +82,15 @@ router.post('/actualizarTrabajo', authController.isLoggedIn, authController.actu
 router.post('/eliminar-trabajo', authController.isLoggedIn, authController.eliminarTrabajo);
 router.post('/agregarTrabajo', authController.isLoggedIn, authController.agregarTrabajo);
 
+router.get('/empleados', authController.isLoggedIn, authController.obtenerEmpleados);
+router.get('/empleados/:id', authController.isLoggedIn, authController.obtenerEmpleadoPorId);
+router.post('/empleados', authController.isLoggedIn, authController.crearEmpleado);
+router.post('/actualizarEmpleado', authController.isLoggedIn, authController.actualizarEmpleado);
+router.post('/eliminarEmpleado', authController.isLoggedIn, authController.eliminarEmpleado);
+// router.get('/editar-empleado/:id', authController.isLoggedIn, authController.mostrarFormularioEdicionEmpleado);
+
+router.get('/generarReportePDF', authController.isLoggedIn, authController.generarReportePDF);
+
+
 
 module.exports = router;

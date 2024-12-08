@@ -5,6 +5,8 @@ const path = require('path');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+
 
 
 dotenv.config({ path: './.env' });
@@ -25,6 +27,7 @@ app.use(express.static(publicDirectory));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 
 app.set('view engine', 'hbs');
 

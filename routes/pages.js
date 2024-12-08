@@ -49,7 +49,7 @@ router.get('/trabajos', (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-  res.render('logout');
+  res.render('login');
 });
 
 router.get('/formulario-candidatos', (req, res) => {
@@ -99,6 +99,11 @@ router.get('/agregar-experiencia', (req, res) => {
 router.get('/agregar-capacitacion', (req, res) => {
   res.render('usuario/agregar-capacitacion');
 });
+
+router.get('/empleado',authController.isLoggedIn, (req, res) => {
+  res.render('admin/empleados');
+});
+
 
 
 router.get('/usuario', authController.isLoggedIn, (req, res) => {
